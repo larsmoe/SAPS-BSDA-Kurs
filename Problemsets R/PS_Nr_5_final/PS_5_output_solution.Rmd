@@ -1,0 +1,466 @@
+
+---
+title: Problem Set PS_5
+output: 
+  html_document: 
+    keep_md: yes
+    toc: yes
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+# Load libraries and source extra code
+library(yaml)
+library(tm)
+library(wordcloud)
+library(SnowballC)
+library(RTutor)
+
+
+# options for rendering data frames
+RTutor::set.knit.print.opts(html.data.frame=FALSE, table.max.rows=25, round.digits=8, signif.digits=8)
+
+# continue knitting even if there is an error
+knitr::opts_chunk$set(error = TRUE) 
+```
+
+# Social Media Analytics - Problem Set Nr. 5
+
+*Stand:    26.03.2018*
+
+Willkommen zum fünften RTutor-Problem Set in diesem Modul!  
+Sie finden hier zwei Aufgaben (*Exercise 9* und *Exercise 10*) zu Inhalten aus Kapitel 4 *Text Mining* - konkret zu den Teilen 4.1 *Einführung und Grundlagen* und 4.2 *Topic Analysis und Topic Mining*.
+
+
+## Exercise 9 -- Einführung und Grundlagen in Text Mining
+Das Ziel dieser *Exercise* ist die Heranführung an die grundlegenden Schritte des Text Mining. Hierzu gehört zunächst das **Einlesen von Textdaten** und die **Konvertierung der Textdaten** in maschinenlesbare Form, in unserem Fall als Document Term Matrix (DTM).  
+
+Die DTM eines Dokumentencorpus beinhaltet in den Zeilen die entsprechenden Dokumente des Corpus, während die Spalten alle verschiedenen Wörter des gesamten Corpus darstellen. Die Einträge der DTM beschreiben dabei das Vorkommen eines Wortes innerhalb eines Dokumentes. Informationen zum *i*-ten Dokument des Corpus erhalten wir daher in der *i*-ten Zeile der DTM. Sie entspricht dem im Skript eingeführten **Dokumentvektor** des Vektorraummodells. In der folgenden *Infobox* finden Sie eine kurze Wiederholung zu Dokumentvektoren. 
+
+
+***
+
+### Info: Wiederholung Dokumentvektoren
+Einträge von Nullen im Dokumentvektor beschreiben, dass die entsprechenden Wörter, die in den Spalten dargestellt werden, nicht im Dokument vorhanden sind. Einträge größer als 0 bedeuten hingegen, dass die entsprechenden Wörter im Dokument enthalten sind. Welche genauen Werte die positiven Einträge annehmen können, hängt von der gewählten Ausprägung des Vektormodells ab. Bei einer **binären Repräsentation** können Einträge nur die Werte 0 oder 1 annehmen. Diese Art der Repräsentation wird bevorzugt für Sentiment Analysis verwendet, da das Vorkommen eines einzelnen Wortes in diesem Kontext wichtiger sein kann als z.B. die Anzahl des Vorkommens (Manning et al. (2008)). Möchte man die Anzahl der Wörter innerhalb eines Dokumentes berücksichtigen wählt man für die Repräsentation der Werte in der DTM die **Termfrequenz (tf)**. Eine weitere Repräsentation der Einträge der DTM ist die **invertierte Termfrequenz (tf-idf)**, bei der die Anzahl des Vorkommens von Wörtern innerhalb eines Dokument normiert mit der Anzahl des Vorkommens von den Wörtern über die Dokumente betrachtet wird.
+
+***
+
+
+Im Folgenden werden wir die DTM mit den drei verschiedenen Repräsentationsmethoden von Dokumenten, die Sie im Skript kennengelernt haben (**binäre Repräsentation**, **Termfrequenz** und **invertierte Termfrequenz**), für eine Sammlung von Textdokumenten erstellen und betrachten. Die hierzu verwendeten Textdaten wurden erstmals von Pang und Lee (2004) für eine Sentiment Analysis benutzt. Der verwendete Datensatz besteht aus 1.000 positiven und 1.000 negativen Filmkritiken, wobei jede Filmkritik in einer separaten Datei gespeichert ist. Die Filmkritiken, die eine positive Grundstimmung gegenüber einem Film ausdrücken, liegen im Ordner *"pos"*, wohingegen Filmkritiken, die eine negative Grundstimmung ausdrücken, im Ordner *"neg"* abgelegt sind. Die Einteilung der Filmkritiken in die Klassen *positiv* und *negativ* wird allerdings erst für die Verwendung von Klassifizierungsalgorithmen eine Bedeutung spielen.
+
+Führen Sie den folgenden Code aus, um die Daten in R einzulesen, sie für die spätere Erstellung einer DTM aufzubereiten und beispielhaft die Eigenschaften und den Inhalt eines Elements aus jedem der beiden Datensätze einsehen zu können.  
+*Hinweis: Der Code in diesem Problem Set ist relativ rechenintensiv. Wundern Sie sich daher nicht, falls Sie nach der Eingabe eines korrekten Codes einige Sekunden warten müssen.*
+
+```{r "9",fig.height=10}
+#Laden des Packages 'tm', um Methoden des Text Mining verwenden zu können
+library(tm)
+#Separates Einlesen der Datensätze für positiv und negativ bewertete Filme
+pos_movie<-DirSource(directory = "./pos")
+neg_movie<-DirSource(directory = "./neg")
+#Speichern der Daten jeweils in einem VCorpus ("Volatile Corpus")
+pos_corpus<-VCorpus(x=pos_movie)
+neg_corpus<-VCorpus(x=neg_movie)
+#Alle Daten in einem  Vektor zusammenfassen
+full_corpus<-c(pos_corpus,neg_corpus)
+#Details über das dritte Element der Datensätze anzeigen
+pos_corpus[[3]]$meta
+neg_corpus[[3]]$meta
+#Ausgabe des dritten Elements der Datensätze
+pos_corpus[[3]]$content
+#- - -
+neg_corpus[[3]]$content
+```
+Wie Sie sehen, wurden die in den Ordnern *"pos"* und *"neg"* enthaltenen Dateien in Objekten der Klasse *"VCorpus"* gespeichert. Hierbei handelt es sich um Listen, deren Elemente jeweils zwei Spalten beinhalten: *meta* und *content*. Während die Spalte *meta* Informationen über das Dokument enthält, wie beispielsweise den Dateinamen im Feld *id*, gibt die Spalte *content* den Inhalt des Textdokumentes zeilenweise aus. Entsprechend  erfolgen der Zugriff auf Informationen über einzelne Elemente der Datensätze (*...$meta*) und das Anzeigen des Inhaltes (*...$content*) jeweils mithilfe von doppelten eckigen Klammern *[[]]*, da in R der Zugriff auf Listenelemente allgemein über doppelte eckige Klammern erfolgt.
+
+### a) Termfrequenz
+Um nun mit den Daten weiterarbeiten zu können, sollen diese in Form einer DTM dargestellt werden. Konkret wollen wir hier als Gewichte die Termfrequenzen verwenden. Hierzu bietet das package "tm" den Befehl **DocumentTermMatrix(x, control = list(stopwords, removeNumbers, removePunctuation, tolower, stripWhitespace, stemming))**. Dabei nimmt die Funktion für *x* ein Objekt der Klasse *"Vcorpus"* entgegen, welches die Textdokumente beinhaltet. Die Inputvariablen im Argument *control* stellen boolesche Ausdrücke dar:  
+* Mithilfe von *stopwords* kann festgelegt werden, ob die im Text enthaltenen Stoppwörter entfernt werden sollen. Stoppwörter sind Wörter ohne inhaltliche Relevanz, wie im Deutschen z.B. "und","so","der","die" oder "das". Wenn *stopwords* auf *FALSE* gesetzt wird, bleiben diese in der DTM enthalten.  
+* Durch *TRUE* bei *removeNumbers* werden alle im Text enthaltenen Zahlen entfernt.  
+* *removePunctuation* entfernt, falls es auf *TRUE* gesetzt wird, die Interpunktion im Text.  
+* Die Variable  *tolower* wandelt alle Buchstaben in Kleinbuchstaben um, wenn sie auf *TRUE* gesetzt wird.  
+* Mittels *TRUE* beim Befehl *stripWhitespace* wird sichergestellt, dass überflüssige aufeinanderfolgende Leerzeichen zu einem Leerzeichen komprimiert werden.  
+* Durch die Variable *stemming* kann festgelegt werden, ob Wörter im Text auf ihren Wortstamm reduziert werden sollen (*TRUE*) oder nicht (*FALSE*). Das Komprimieren von Wörtern auf ihre Stämme dient vor allem der Dimensionsreduktion und kann je nach Anwendungsfall sinnvoll sein oder nicht. Für das Bilden der Wortstämme wird intern das R-Package *"SnowballC"* verwendet, welches auf den Porter-Stemming-Algorithmus zurückgreift.
+
+Per Default sind alle Befehle auf *FALSE* gesetzt und die DTM wird mit der absoluten Termfrequenz **tf** dargestellt.  
+- - -
+*Aufgabe*: Wenden Sie den Befehl *DocumentTermMatrix()* auf den gesamten Datensatz *full_corpus* (ein *VCorpus*-Objekt) an, sodass Stoppwörter, Zahlen und Interpunktion entfernt werden, alle Wörter in Kleinbuchstaben konvertiert werden, unnötige Leerzeichen entfernt werden und **keine** Wortstämme gebildet werden. Bitte beachten Sie auch, die Parameter in der genannten Reihenfolge anzugeben. Geben Sie anschließend die erzeugte DTM mit dem Befehl *print()* aus.
+- - -
+```{r "9__2"}
+#Wenden Sie den oben beschriebenen Befehl an und speichern Sie das
+#Ergebnis in der Variable DTM_tf
+DTM_tf <- DocumentTermMatrix(x=full_corpus,
+                          control=list(
+                            stopwords=TRUE,
+                            removeNumbers=TRUE,
+                            removePunctuation=TRUE,
+                            tolower=TRUE,
+                            stripWhitespace=TRUE,
+                            stemming=FALSE))
+
+#Geben Sie anschließend das Ergebnis für die DTM_tf 
+#mit dem Befehl print() aus
+print(DTM_tf)
+```
+Der Ausgabe der Document Term Matrix *DTM_tf* können Sie entnehmen, dass die DTM aus 2.000 Dokumenten besteht - den vorher eingelesenen 1.000 positiven und 1.000 negativen Filmkritiken. Des Weiteren werden über alle abgegebenen Kritiken hinweg 46.508 verschiedene Begriffe verwendet. Die darauffolgenden beiden Zeilen geben an, wie stark die Matrix besetzt ist. In diesem Fall sind weniger als 1% der Felder besetzt. Dies sieht man sowohl am Verhältnis der besetzten Felder (529.267) zu den nicht-besetzten Feldern (92.486.733), als auch an der *Sparsity* von 99%. Um sich ein Bild über die Struktur der DTM machen zu können, sollen Sie sich nun einen Ausschnitt aus der DTM anzeigen lassen.
+
+- - -
+*Aufgabe*: Wenden Sie nun den Befehl *inspect()* an, um sich Ergebnisse anzeigen zu lassen. Lassen Sie sich mit dem Befehl konkret die ersten zehn Dokumente (werden in den Zeilen der Matrix abgetragen) sowie die Terme 1000 bis 1100 (werden in den Spalten der Matrix gespeichert) von *DTM_tf* ausgeben.  
+- - -
+```{r "9__3"}
+#Wenden Sie den Befehl inspect() wie in der Aufgabe beschrieben
+#auf die DTM_tf an
+inspect(x=DTM_tf[1:10,1000:1100])
+```
+
+Wie Sie an den Daten der DTM feststellen können, wird nur ein Ausschnitt aus der Document Term Matrix ausgegeben. Der Inhalt aus dem betrachteten Teil ist unter *"Sample"* in Form einer Matrix dargestellt. In den Zeilen sind die gewünschten ersten zehn Dokumente abgetragen. Dies lässt sich daran erkennen, dass die Namen der Zeilen (in der ersten Spalte "Docs") aufsteigend durchnummeriert sind, beginnend von "cv000"" bis "cv009". In den Spalten sind allerdings nicht alle 101 Terme aus dem Bereich zwischen 1000 und 1100 aufgeführt, den wir uns ausgeben lassen wollten. Dies liegt an der Funktion *inspect()*, die jeweils nur zehn Zeilen und zehn Spalten einer Matrix ausgibt. Sie selektiert automatisch die Zeilen und Spalten, die am meisten Einträge ungleich Null enthalten. Wie Sie am Verhältnis Non-/sparse entries der DTM erkennen können, ist der uns interessierende Bereich ebenfalls nur schwach mit Einträgen besetzt. Wenn Sie die Anzahl der Einträge ungleich Null nachzählen, werden Sie feststellen, dass Ihnen aktuell alle 13 Non-Sparse Entries in diesem Bereich aus den 1010 Einträgen im Sample angezeigt werden. Würde die Funktion *inspect()* diese Selektion nicht vornehmen, würden wir den gesamten Matrixausschnitt sehen, der größtenteils mit Nullen besetzt ist. In der Spalte *"ally"* lässt sich zudem auch erkennen, dass hier wirklich nach der **Termfrequenz tf** gewichtet wurde, da sich aus dieser Spalte ablesen lässt, dass das Wort im Textdokument *"cv007_4968.txt"* zweimal vorkommt.
+
+Lassen Sie uns nun die am häufigsten auftretenden Wörter im Textcorpus auf Basis der *DTM_tf* betrachten. Hierzu bietet sich die Verwendung der Funktion *findFreqTerm(x,lowfreq, highfreq)* an, die auf Basis einer DTM als Eingabe für die Variable *x* die Terme ausgibt, deren Häufigkeit im Intervall zwischen *lowfreq* und *highfreq* liegt. Per Default sind diese Eingabeparameter als *lowfreq=0* und *highfreq= Inf* definiert.
+- - -
+*Aufgabe*: Lassen Sie sich mit Hilfe des Befehls findFreqTerms() alle Terme auf Basis der *DTM_tf* ausgeben die mindestens 1000 Mal im TextCorpus auftreten. 
+- - -
+*Hinweis: Da keine Begrenzung für die maximale Anzahl der Terme nach oben gewünscht ist können Sie den Eingabeparameter highfreq für diese Aufgabe vernachlässigen.*
+
+
+```{r "9__4"}
+#Wenden Sie den Befehl findFreqTerms() auf die DTM_tf an und
+#lassen Sie sich die Terme ausgeben, die 
+#mindestens 1000 mal im TextCorpus auftreten
+findFreqTerms(x=DTM_tf, lowfreq=1000)
+```
+
+Nicht sehr überraschend sind sehr oft erwähnte Terme beispielsweise *"film"*, *"films"*, *"director"* oder auch *"story"*. Aber auch Wörter, die den Eindruck der Filme auf ihr Publikum wiedergeben, sind vertreten wie z.B. *"good"* oder *"bad"*. Leider ist diese Ausgabe nicht nach der Häufigkeit des Auftretens der Wörter geordnet. Daher möchten wir nun in einem nächsten Schritt die häufigsten 50 Terme geordnet nach der Häufigkeit ihres Auftretens einsehen. Zu diesem Zweck erzeugen wir zunächst einen Dataframe aus der *DTM_tf* mit den Termen als Zeilennamen und einer Spalte, die absteigend geordnet die Häufigkeit des jeweiligen Terms der Zeile angibt. Um anschließend einen Überblick über maximal 50 der häufigsten Terme zu erhalten, verwenden wir die Funktion *wordcloud(words, freq, scale, max.words, colors)* aus dem package *"wordcloud"*, die die angegebenen Terme für den Parameter *words* mit dem Auftreten ihrer Häufigkeit im Parameter *freq* gewichtet und somit häufige Terme größer darstellt. Der Parameter *scale* reguliert hierbei die Skalierung der Größe der Wörter im Plot. Der Parameter *max.words* bestimmt die Anzahl der Terme, die in der Wordcloud maximal dargestellt werden sollen. Führen Sie nun bitte den dargestellten Code aus, um die erklärten Schritte umzusetzen und die erzeugte **Wordcloud** einzusehen. 
+
+```{r "9__5",fig.height=10}
+#Laden des Packages 'wordcloud', um die Funktion wordcloud() verwenden zu können
+library(wordcloud)
+#Erzeugt einen Dataframe aus den Spaltensummen der DTM_tf und
+#ordnet das Ergebnis absteigend 
+freq_tf <- data.frame(sort(x = colSums(x = as.matrix(DTM_tf)), decreasing = TRUE))
+
+#Erzeugt eine Wordcloud aus den maximal 50 häufigsten Termen 
+#gewichtet mit ihrer Häufigkeit
+wordcloud(words = rownames(x = freq_tf), freq = freq_tf[,1], max.words = 50, scale = c(2,.5), colors = brewer.pal(3, "Dark2"))
+```
+
+Wie Sie der Wordcloud entnehmen können, sind die am häufigsten verwendeten Wörter *"film"*, *"movie"*, *"one"* und *"like"*. Dies ist auch nicht weiter verwunderlich, wenn man weiß, dass es sich bei den Dokumenten um Filmkritiken handelt und eine Gewichtung nach der absoluten Häufigkeit des Auftretens der Terme vorgenommen wurde.
+
+
+### b) Invertierte Termfrequenz
+Im Skript haben Sie neben der Termfrequenz auch die invertierte Termfrequenz **tf-idf** kennengelernt. Um eine DTM mit **tf-idf**-Gewichtung zu erzeugen, müssen wir wieder den ursprünglichen Textcorpus in Form des *VCorpus*-Objekts *full_corpus* an R übergeben.
+- - -
+*Aufgabe*: Erstellen Sie analog zur *DTM_tf* eine neue DTM mit dem Namen *DTM_tfidf*. Wenden Sie hierzu den kompletten Befehl für die Erstellung der Document Term Matrix erneut auf den ursprünglichen Datensatz an. Wählen Sie, im Vergleich zur Erstellung der *DTM_tf*, an letzter Stelle in *control = list()* das zusätzliche Argument *weighting* und setzen Sie diesem den Ausdruck *weightTfIdf* gleich, um die Gewichtung für die invertierte Termfrequenz zu erhalten.
+- - -
+```{r "9__6"}
+#Erstellen Sie wie in der Aufgabe beschrieben die DTM_tfidf mit der invertierten 
+#Termfrequenz als Gewichtungsmethode
+#Geben Sie anschließend wieder das Ergebnis für die Document Term Matrix aus
+DTM_tfidf <- DocumentTermMatrix(x=full_corpus,
+                          control=list(
+                            stopwords=TRUE,
+                            removeNumbers=TRUE,
+                            removePunctuation=TRUE,
+                            tolower=TRUE,
+                            stripWhitespace=TRUE,
+                            stemming=FALSE,
+                            weighting=weightTfIdf))
+#Geben Sie anschließend das Ergebnis für die DTM_tfidf 
+#mit dem Befehl print() aus
+print(DTM_tfidf)
+```
+Die Ausgabe für die neue Document Term Matrix *DTM_tfidf* unterscheidet sich in den ersten vier Zeilen nicht von der vorher erstellten DTM. Sowohl die Anzahl der Elemente, als auch das Verhältnis zwischen den besetzten und den nicht besetzten Feldern entspricht exakt den Werten aus der *DTM_tf*. Der einzige Unterschied zwischen beiden Ausgaben liegt in der letzten Zeile, also in der Gewichtung (*Weighting*). Während in der *DTM_tf* die Termfrequenz zum Einsatz kommt, wird bei der *DTM_tfidf* die invertierte Termfrequenz verwendet. Um nun jedoch die Unterschiede in den konkreten Ergebnissen der DTMs zu sehen, wollen wir uns jetzt einen Ausschnitt aus der *DTM_tfidf* anzeigen lassen. 
+- - -
+*Aufgabe*: Verwenden Sie analog zur vorherigen Ausgabe der Ergebnisse erneut den Befehl *inspect*. Lassen Sie sich hiermit wieder die ersten zehn Dokumente sowie die Terme 1000 bis 1100 der *DTM_tfidf* ausgeben.
+- - -
+```{r "9__7"}
+#Wenden Sie den Befehl inspect nun auf die *DTM_ifidf* an
+inspect(x=DTM_tfidf[1:10, 1000:1100])
+```
+Die Ausgabe der neuen *DTM_tfidf* erfolgt analog zur *DTM_tf*. Es fällt allerdings auf, dass die Einträge der Matrix nicht mehr aus natürlichen Zahlen bestehen, sondern acht bzw. neun Nachkommastellen besitzen. Der Grund hierfür liegt in der Berechnung der **tf-idf**. Wie Sie bereits im Skript gelernt haben, wird diese folgendermaßen berechnet: Die Termfrequenz wird mit dem Logarithmus des Quotienten aus der Gesamtanzahl aller Dokumente und der Anzahl der Dokumente, die den betrachteten Term enthalten multipliziert. Durch diesen Zusatz wird bei der invertierten Termfrequenz berücksichtigt, dass ein Term weniger "wichtig" ist, falls er in vielen Dokumenten vorkommt.
+
+Schauen wir uns nun das Resultat dieser Gewichtungsvariante in Bezug auf häufige Terme an. Hierfür erzeugen wir wieder die **Wordcloud** der 50 häufigsten Terme resultierend aus der *DTM_tfidf*. Führen Sie dazu den folgenden bereits bekannten Code aus. 
+
+```{r "9__8",fig.height=10}
+
+#Erzeugt einen Dataframe aus den Spaltensummen der DTM_tf und
+#ordnet das Ergebnis absteigend 
+freq_tfidf <- data.frame(sort(x = colSums(x = as.matrix(DTM_tfidf)), decreasing = TRUE))
+
+#Erzeugt eine Wordcloud aus den maximal 50 häufigsten Termen 
+#gewichtet mit ihrer Häufigkeit
+wordcloud(words = rownames(x = freq_tfidf), freq = freq_tfidf[,1], max.words = 50, scale = c(1,.25), colors = brewer.pal(3, "Dark2"))
+```
+Wie Sie im Vergleich zu der Wordcloud aus der *DTM_tf* erkennen können, sind die Größenunterschiede in der Darstellung nun deutlich geringer. Das bedeutet, dass diese Terme durch die Gewichtung mit der *tf-idf* nun als ähnlich wichtig betrachtet werden. Während in der ersten Wordcloud das Wort *"film"* noch der Spitzenreiter war, werden nun Wörter wie *"good"* oder *"bad"* als wichtiger erachtet. Für eine Sentiment Analysis könnte sich daher die Gewichtung mit der *tf-idf* anbieten.
+
+### c) Binärfrequenz
+Wir haben nun die Termfrequenz, die invertierte Termfrequenz und ihre Verwendung im Zusammenhang mit der DTM betrachtet. Zusätzlich verfügt R auch über eine Darstellung der DTM bestehend aus binären Vektoren, wie sie im Skript ebenfalls als eine Ausprägung des Vektorraum-Modells eingeführt wurden. Wir bezeichnen dieses Gewichtungsverfahren im weiteren Verlauf als die **Binärfrequenz (bf)**. Hierbei werden lediglich die Werte 0 und 1 verwendet, um darzustellen, ob ein Term in einem Dokument vorkommt oder nicht. Die Häufigkeit des Auftretens wird daher nicht berücksichtigt.  
+Um auch die Anwendung des binären Gewichtungsverfahrens in R kennenzulernen, werden wir wieder die DTM erzeugen. Dabei soll jedoch diesmal nicht auf die Bildung der Wortstämme verzichtet werden, das heißt, die einzelnen Wörter sollen auf ihren Wortstamm zurückgeführt werden.
+- - -
+*Aufgabe*: Erstellen Sie analog zu den vorherigen DTMs eine neue DTM mit dem Namen *DTM_bin*, wobei diesmal die **Wortstämme** gebildet werden sollen. Wenden Sie hierzu den kompletten Befehl für die Document Term Matrix nochmal auf den ursprünglichen Datensatz *full_corpus* an. Wählen Sie für das Argument *weighting* den Ausdruck *weightBin*, um die Gewichtung für die Binärfrequenz zu erhalten.
+- - -
+*Hinweis: Das Ausführen dieser Aufgabe ist relativ rechenintensiv. Die Ausführung kann je nach Laptop variieren und bis zu ein paar Minuten dauern.*
+
+```{r "9__9"}
+#Erstellen Sie wie in der Aufgabe beschrieben die DTM_bin mit der Binärfrequenz als
+#Gewichtungsmethode
+#Geben Sie anschließend wieder das Ergebnis für die Document Term Matrix aus
+DTM_bin <- DocumentTermMatrix(x=full_corpus,
+                          control=list(
+                            stopwords=TRUE,
+                            removeNumbers=TRUE,
+                            removePunctuation=TRUE,
+                            tolower=TRUE,
+                            stripWhitespace=TRUE,
+                            stemming=TRUE,
+                            weighting=weightBin))
+#Geben Sie anschließend das Ergebnis für die DTM_bin 
+#mit dem Befehl print() aus
+print(DTM_bin)
+```
+Hätten wir nicht die Wortstämme gebildet, würde die Ausgabe für die neue Document Term Matrix *DTM_bin* sich in den ersten vier Zeilen wieder nicht von den beiden vorher erstellten DTMs unterscheiden. So unterscheidet sich die *DTM_bin* nun jedoch zusätzlich zur Gewichtung auch in der Anzahl der Terme und den Non-/sparse entries zu den bisher erzeugten DTMs. Obwohl die DTM nun insgesamt weniger Terme und Einträge besitzt, ist das Verhältnis von Non-/sparse entries durch die Bildung der Wortstämme doch gestiegen. Das bedeutet, unsere Matrix ist nun stärker besetzt. Einen Unterschied in den konkreten Ergebnissen wollen wir uns nun erneut im bereits bekannten Ausschnitt der DTM anzeigen lassen.
+- - -
+*Aufgabe*: Verwenden Sie analog zu den vorherigen beiden Ausgaben der Ergebnisse erneut den Befehl *inspect*. Lassen Sie sich hiermit wieder die ersten zehn Dokumente sowie die Terme 1000 bis 1100 ausgeben.
+- - -
+```{r "9__10"}
+#Wenden Sie den Befehl inspect nun auf die DTM_bin an
+inspect(x=DTM_bin[1:10, 1000:1100])
+```
+Wie Sie sehen können, sind die Spalten nicht mehr dieselben. Da die Anzahl der Spalten reduziert wurde, haben sich diese nach vorne verschoben. Wir betrachten nun Wörter, die auf *"an"* beginnen, wobei wir bisher im gleichen Ausschnitt die Wörter mit Anfangsbuchstaben *"al"* erhielten. Dass in diesem Bereich wieder das Verhältnis Non-/sparse entries : 13/997 ist, ist reiner Zufall. 
+Aufgrund der Gewichtung nach der **bf** sehen wir nun, welche Wörter in den jeweiligen Dokumenten auftauchen und welche nicht. Dies kann zum Beispiel vorteilhaft im Kontext einer Sentimentanalyse sein, in der wenige Wörter die Gefühle eines Autors beim Schreiben des Dokuments ausdrücken und diese dafür nicht mehrfach im Text vorkommen müssen. Durch die **bf** werden solche Wörter höher gewichtet. Beispielsweise erzielten Pang et. al (2002) für die Ergebnisse ihrer Sentimentanalyse deutlich bessere Ergebnisse für die **bf** im Vergleich zur **tf**. Inspizieren wir zuletzt noch den Bereich, in dem sich die Wörter in der *DTM_bin* mit Anfangsbuchstaben *"al"* befinden, um einen direkten Vergleich zum Matrixausschnitt aus der *DTM_tf* bzw. *DTM_idftf* zu haben. Führen Sie dazu den nachfolgenden Code aus. 
+```{r "9__11"}
+#Wenden Sie den Befehl inspect nun auf die DTM_bin an
+inspect(x=DTM_bin[1:10, 600:700])
+```
+In diesem Bereich wurde die Sparsity durch das Bilden der Wortstämme leicht erhöht. Allerdings gibt es auch Terme, die durch das Bilden der Wortstämme verloren gegangen sind, wie beispielsweise das Wort *"ally"*. Gerade in sozialen Netzwerken wie z.B Facebook oder Twitter, in denen oftmals Umgangsprache verwendet wird, ist das Bilden der Wortstämme eher nicht empfehlenswert. Hierdurch könnten ausschlaggebende Terme wie beispielsweise Wörter, die mit einem Hashtag beginnen, verloren gehen.
+
+Zu guter Letzt betrachten wir die Wordcloud der häufigsten 50 Terme resultierend aus der *DTM_bin* und basierend auf den Wortstämmen der Terme. Führen Sie dazu den folgenden Code aus und betrachten Sie das Ergebnis.
+```{r "9__12",fig.height=10}
+#Erzeugt einen Dataframe aus den Spaltensummen der DTM_tf und
+#ordnet das Ergebnis nach absteigender Größe 
+freq_bin <- data.frame(sort(x = colSums(x = as.matrix(DTM_bin)), decreasing = TRUE))
+
+#Erzeugt eine Wordcloud aus den maximal 50 häufigsten Termen 
+#gewichtet mit ihrer Häufigkeit
+wordcloud(words = rownames(x = freq_bin), freq = freq_bin[,1], max.words = 50, scale = c(1,.25), colors = brewer.pal(3, "Dark2"))
+```
+Wie Sie sehen, ist hier der Größenunterschied zwischen Wörtern im Vergleich zur Gewichtung mit der **tf** deutlich kleiner. Verglichen mit der Wordcloud resultierend aus der *DTM_tfidf* ist der Größenunterschied jedoch immer noch größer. Welches der Gewichtungsverfahren schlussendlich am Besten für z.B. eine Sentiment Analysis geeignet wäre ist allgemein und im Voraus schwer zu sagen. Hierfür müsste man konkret am betrachteten Datensatz die Präzision bei der Verwendung verschiedener Gewichtungen und Algorithmen vergleichen. 
+
+
+
+
+***
+
+### Award: Text Processing
+Toll! Sie haben Exercise 9 gemeistert! 
+Sie sind nun in der Lage unstrukturierte Textdaten in maschinenlesbarer Form darzustellen und einzusehen! Dieses Wissen ist eine der Grundlagen des Text Minings und wird Ihnen dabei helfen, Textdaten zu clustern und zu klassifizieren.
+
+***
+
+
+## Exercise 10 -- Topic Analysis und Topic Mining
+
+Nachdem Sie nun einige der Möglichkeiten kennengelernt haben, Text in maschinenlesbarer Form darzustellen, soll diese Exercise 10 sich dem **Clustern von Textdaten** widmen.
+
+Im Skript haben Sie bereits den **K-means-Algorithmus** für Clustering kennengelernt. Dieser ist standardmäßig in R enthalten und soll im Mittelpunkt von Exercise 10 stehen. Da Sie im Laufe der Exercise öfter auf die Funktion *kmeans(x, centers, iter.max, nstart)* zurückgreifen müssen, stellen wir die Beschreibung des Funktionsaufrufs bereits an diese Stelle. Die Funktion nimmt für *x* eine numerische Matrix entgegen, die in unserem Fall für das Text Mining die DTM ist. Durch den Parameter *centers* lässt sich die Anzahl der Cluster bestimmen, indem für *centers* eine Zahl eingegeben wird. Es können aber auch direkt die initialen Clusterzentren bestimmt werden, wenn man diese stattdessen an das Argument *centers* übergibt. Möchte man die Clusterzentren für den Start des Algorithmus nicht explizit setzen, werden diese zufällig gewählt. Mit *iter.max* lässt sich die Anzahl maximaler Iterationen bestimmen, die der K-means-Algorithmus durchlaufen darf, um die Cluster zu bilden, vorausgesetzt er konvergiert vorher nicht. Defaultmäßig gilt *iter.max=10*. Zuletzt lässt sich mit *nstart* die Anzahl der Durchführungen des Algorithmus bestimmen. Da bei zufälliger Wahl der initialen Clusterzentren verschiedene Ergebnisse entstehen können, je nachdem wie die Clusterzentren gewählt wurden, empfiehlt es sich, den Algorithmus mit verschiedenen zufällig gewählten Clusterzentren durchlaufen zu lassen. Aus laufzeittechnischen Gründen werden wir allerdings auf diesen Parameter verzichten und ihn bei der Default-Einstellung *nstart=1* belassen.
+
+Im Skript wurde bereits kurz in der Einführung zu Kapitel 4.2 das Thema Textklassifikation angesprochen und vom Text Clustering abgegrenzt: Bei der **Textklassifikation** handelt es sich um ein *überwachtes Lernen*, bei dem jedes  Textdokument einer Klasse aus einer vordefinierten Auswahl an Klassen zugewiesen wird. Zum Beispiel können diese vordefinierten Klassen im Falle einer Sentiment Analysis die Klassen *"positiv"* und *"negativ"* sein, um anschließend Textdokumente einer dieser Klassen (bzw. der Gefühlslage positiv oder negativ) zuzuweisen. Dem Gegenüber steht das **Text Clustering**, bei welchem es sich um ein *unüberwachtes Lernen* handelt. Hier gibt es keine vordefinierte Auswahl von Klassen, sondern es wird lediglich die Anzahl an Clustern bestimmt, in die man die Textdokumente unterteilen möchte.
+
+### a) Clustering versus Klassifikation - ein Test
+Nun können wir diese beiden Arten der Analyse im Praktischen voneinander abgrenzen. Sie haben in Exercise 9 bereits den Datensatz bestehend aus 1.000 positiven und 1.000 negativen Filmkritiken von Pang and Lee (2004) kennengelernt. Eigentlich ist dieser Datensatz für **Textklassifikation** ausgelegt, da wir die beiden Klassen *"positiv"* und *"negativ"* unterscheiden können. Jetzt stellt sich allerdings die folgende Frage: Wenn die Textdokumente alle eine der beiden Ausprägung *"positiv"* oder *"negativ"* besitzen, ist es auch mit einem Clusterverfahren möglich, Dokumente nach diesen Ausprägungen zu unterteilen? Dieser Frage möchten wir im Folgenden nachgehen. Bitte laden Sie hierfür nochmal den Datensatz durch Ausführung des folgenden Codes.
+
+```{r "10__13",fig.height=10}
+#Laden des Packages 'tm', um Methoden des Text Mining verwenden zu können
+library(tm)
+#Separates Einlesen der Datensätze für positiv und negativ bewertete Filme
+pos_movie<-DirSource(directory = "./pos")
+neg_movie<-DirSource(directory = "./neg")
+#Speichern der Daten jeweils in einem VCorpus ("Volatile Corpus")
+pos_corpus<-VCorpus(x=pos_movie)
+neg_corpus<-VCorpus(x=neg_movie)
+#Alle Daten in einem  Vektor zusammenfassen
+full_corpus<-c(pos_corpus,neg_corpus)
+```
+
+Um die Textdokumente dem K-means-Algorithmus zu übergeben, müssen wir den Text wieder in maschinenlesbarer Form darstellen. Wir wählen diesmal die **Binärfrequenz (bf)** als Gewichtungsmethode. Bitte führen Sie den untenstehenden, Ihnen bereits aus Exercise 9 bekannten Code aus, der die Document Term Matrix mit den entsprechenden Gewichten erzeugt.
+
+```{r "10__14",fig.height=10}
+DTM_bin <- DocumentTermMatrix(x=full_corpus,
+                              control=list(
+                                stopwords=TRUE,
+                                removeNumbers=TRUE,
+                                removePunctuation=TRUE,
+                                tolower=TRUE,
+                                stripWhitespace=TRUE,
+                                stemming=FALSE,
+                                weighting=weightBin))
+
+print(DTM_bin)
+```
+
+Da der K-means-Algorithmus relativ rechenintensiv ist, lohnt es sich, besonders selten vorkommende Terme - und damit gleichbedeutend Spalten der DTM - aus der DTM zu entfernen. Dies lässt sich mit der Funktion *removeSparseTerms(x, sparse)* realisieren, die für das Argument *x* die DTM entgegennimmt. Der Parameter *sparse* bestimmt dabei, wie weit die **DTM reduziert** werden soll. Erwartet wird eine Zahl im Intervall [0;1], wobei 0 alle Spalten und 1 keine der Spalten entfernt. Diese Zahl ist interpretierbar als der Anteil der Dokumente, in denen der Term allerhöchstens fehlen darf, um ihn in der DTM zu behalten. Da die DTM ohnehin sehr schwach besetzt ist (Sparsity 99%), ist der Parameter *sparse* mit Vorsicht zu wählen. Auch Parameter größer 0 können zur Entfernung aller Spalten führen oder reduzieren die DTM so stark, dass Sie unbrauchbar für die Algorithmen wird.
+
+- - -
+*Aufgabe:* Wenden Sie den Befehl *removeSparseTerms()* auf die *DTM_bin* an, sodass Terme in der Matrix erhalten bleiben, die in mindestens 1% der Dokumente vorkommen.
+- - -
+
+```{r "10__15",fig.height=10}
+#Wenden Sie den Befehl removeSparseTerms() wie beschrieben auf die DTM_bin an
+#und speichern Sie das Ergebnis in der Variable DTM_bin_dense
+DTM_bin_dense<-removeSparseTerms(x=DTM_bin,sparse=0.99)
+#Lassen Sie sich das Ergebnis von DTM_bin_dense mit print() ausgeben
+print(DTM_bin_dense)
+```
+Wie Sie sehen, hat sich die Anzahl der Terme deutlich, auf etwas mehr als doppelt so viele Terme wie Dokumente, reduziert. Auch die Sparsity konnte auf "nur" noch 95% reduziert werden.
+
+Nachdem wir nun die Rechenzeit durch Dimensionsreduktion der DTM verringert haben, können wir uns dem **Clustern** zuwenden. Widmen wir uns daher nun der oben dargestellten Fragestellung. Damit Sie die selben Cluster erhalten wie von uns angedacht, setzen wir den Zufallsgenerator von R mit Hilfe der Funktion *set.seed()*. Dadurch wird garantiert, dass die zufällig gewählten initialen Clusterzentren die selben sind, die bei der Erstellung dieser Exercise verwendet wurden.
+
+- - -
+*Aufgabe:* Wenden Sie die Funktion *kmeans(x, centers)* auf *DTM_bin_dense* an, sodass die initialen Clusterzentren zufällig gewählt werden und zwei Cluster entstehen. Andere Eingabeparameter der Funktion können Sie vernachlässigen.
+- - -
+
+```{r "10__16",fig.height=10}
+#Der Seed wird gesetzt um reproduzierbare Cluster zu erzeugen
+set.seed(1806)
+#Bilden Sie auf Basis der DTM_bin_dense zwei Cluster mit Hilfe
+#der Funktion kmeans() und speichern Sie das Ergebnis in
+#der Variable k_clusters_bin
+k_clusters_bin<-kmeans(x=DTM_bin_dense, centers =2)
+```
+Die Funktion *kmeans()* liefert ein Objekt der Klasse *"kmeans"* zurück, welches mehrere Komponenten besitzt. Die für dieses Problem Set relevanten Komponenten sind *"size"* und *"cluster"*. Die Komponente *"size"* gibt an, wie viele Dokumente sich jeweils in den Clustern befinden, wohingegen *"cluster"* das zugehörige Cluster zu jedem Dokument ausgibt. Die Cluster werden dabei einfach von 1 an mit Nummern bezeichnet. Die Bedeutung der anderen Komponenten des Objekts finden Sie auf der entsprechenden R-Hilfeseite zum Befehl *kmeans()*. 
+Führen Sie den folgenden Code aus, um sich ein Bild über die Ausgabe zu machen. Für *"cluster"* werden hierbei beispielhaft nur die ersten zehn Dokumente betrachtet.
+```{r "10__17",fig.height=10}
+#Ausgabe der Komponente size
+k_clusters_bin$size
+#Ausgabe der Komponente cluster
+k_clusters_bin$cluster[1:10]
+```
+Wie Sie bei der Ausgabe von *"size"* erkennen können, haben sich zwei Cluster gebildet, die von der Größe her relativ ähnlich sind. Ob diese nun wirklich nach positiven und negativen Dokumenten getrennt sind, lässt sich mit dem nachfolgenden Code prüfen. Der Operator *"X %in% Y"* überprüft dabei, welche der Elemente des Vektors *"X"* im Vektor *"Y"* enthalten sind. Das Ergebnis ist ein boolescher Vektor, der aufsummiert die Anzahl enthaltener Element von *"X"* in *"Y"* liefert. *X* sind in diesem Fall die Namen der Dokumente, die durch den K-means-Algorithmus Cluster 1 bzw. 2 zugeordnet wurden. *Y* sind die Namen der positiven bzw. negativen Dokumente.  
+Bitte führen Sie den Code aus.
+```{r "10__18",fig.height=10}
+#extrahiert die Dokumenten- bzw. Zeilennamen der positiven Dokumente
+#aus der DTM_bin_dense
+pos_moviefiles<-row.names(x=DTM_bin_dense[1:1000,])
+#extrahiert die Dokumenten- bzw. Zeilennamen der negativen Dokumente
+#aus der DTM_bin_dense
+neg_moviefiles<-row.names(x=DTM_bin_dense[1001:2000,])
+#Speichert die Dokumenten- bzw. Zeilennamen aller Dokumente aus Cluster 1 in
+#der Variable moviefiles_cluster1
+moviefiles_cluster1<-names(x=k_clusters_bin$cluster[k_clusters_bin$cluster==1])
+#Speichert die Dokumenten- bzw. Zeilennamen aller Dokumente aus Cluster 2 in
+#der Variable moviefiles_cluster2
+moviefiles_cluster2<-names(x=k_clusters_bin$cluster[k_clusters_bin$cluster==2])
+#Prüft, wie viele der Dokumente aus Cluster 1 positive Dokumente
+#bzw. Filmkritiken sind
+sum(x= (moviefiles_cluster1 %in% pos_moviefiles))
+#Prüft, wie viele der Dokumente aus Cluster 1 negative Dokumente
+#bzw. Filmkritiken sind
+sum(x= (moviefiles_cluster1 %in% neg_moviefiles))
+#Prüft, wie viele der Dokumente aus Cluster 2 positive Dokumente
+#bzw. Filmkritiken sind
+sum(x= (moviefiles_cluster2 %in% pos_moviefiles))
+#Prüft, wie viele der Dokumente aus Cluster 2 negative Dokumente
+#bzw. Filmkritiken sind
+sum(x =(moviefiles_cluster2 %in% neg_moviefiles))
+```
+Aus den Berechnungen wird klar, dass der Algorithmus die Filmkritiken nicht nach *"positiv"* und *"negativ"* aufgeteilt hat. Dies verdeutlicht nochmals, warum für den Fall, dass nach vordefinierten Klassen unterschieden werden soll, besser keine Clusteringalgorithmen verwendet werden sollen. Das Problem ist hier, dass sich die Kriterien zur Clusterbildung nur schwer steuern lassen. Dies lässt sich allerdings auch zum Vorteil nutzen. Möchte man zum Beispiel wichtige Themen in Texten identifizieren, ohne zu wissen, um welche Themen es sich dabei konkret handelt, sind Clusteringalgorithmen sehr gut geeignet. Lassen Sie uns diesen Anwendungsfall am Beispiel der Filmkritiken verdeutlichen.
+
+### b) Text Clustering - ein Beispiel
+Obwohl die Filmkritiken als *positiv* oder *negativ* gekennzeichnet sind, können sie Filme behandeln, die aus verschiedenen Genres kommen. Im Folgenden möchten wir Genres oder Themenschwerpunkte mittels K-means-Clustering innerhalb der Filmkritiken identifizieren. Erzeugen wir dazu aus den ursprünglichen Textdaten erneut eine DTM, diesmal allerdings mit der **invertierten Termfrequenz (tf-idf)** als Gewichtungsverfahren. Tests bei der Erstellung dieser Exercise haben gezeigt, dass sich dieses Gewichtungsverfahren am besten eignet, um Themen in diesem Datensatz zu erkennen. Sie können aber auch gerne weitere Untersuchungen an den Daten mit anderen Gewichtungsverfahren ausprobieren.   
+Führen Sie bitte den Code aus, um die genannten Schritte zu realisieren.
+```{r "10__19",fig.height=10}
+DTM_tfidf <- DocumentTermMatrix(x=full_corpus,
+                                control=list(
+                                  stopwords=TRUE,
+                                  removeNumbers=TRUE,
+                                  removePunctuation=TRUE,
+                                  tolower=TRUE,
+                                  stripWhitespace=TRUE,
+                                  stemming=FALSE,
+                                  weighting=weightTfIdf))
+```
+Der K-means-Algorithmus in R clustert auf Basis des Euklidischen Ähnlichkeitsmaßes, welches Sie bereits im Skript kennengelernt haben. Hierbei wird die Ähnlichkeit zwischen zwei Vektoren auf Grundlage der euklidischen Distanz zweier Vektoren berechnet. Da es das Ziel ist, Dokumente zu finden, die möglichst ähnliche Themen behandeln, kommt es primär auf die Richtung der Vektoren an. Daher ist es von Vorteil, die Zeilen der DTM, die die Filmkritiken repräsentieren, zu normieren. Dadurch werden Vektoren, die in dieselbe Richtung zeigen, auch als identisch angesehen und diese werden somit mit einer hohen Ähnlichkeit versehen.
+Um die *DTM_tfidf* in jeder Zeile zu normieren und dadurch die *DTM_tfidf_dense* zu erhalten, wird eine Funktion in R implementiert. Diese Funktion *norm_eucl(x)* berechnet für eine Matrix als Eingabe für *x* die euklidische Norm für jeden Zeilenvektor und teilt jeden Eintrag der entsprechenden Zeile durch die euklidische Norm des Zeilenvektors. Ist die Funktion eingelesen, lässt Sie sich wie bisherige Funktionen aufrufen.  
+Führen Sie dazu bitte den folgenden Code aus.  
+*Hinweis: Den genauen Aufbau der Funktion müssen Sie an dieser Stelle nicht nachvollziehen.*
+```{r "10__20",fig.height=10}
+norm_eucl<- function(x){
+  x/apply(x,1,function(x) sum(x^2)^.5)
+}
+```
+- - -
+*Aufgabe*: Wenden Sie nun die Funktion *norm_eucl* auf die *DTM_tfidf* an, um alle Dokumentvektoren zu normieren. Reduzieren Sie anschließend die DTM auf die wichtigen Terme, die mindestens in 1% der Dokumente vorkommen, mit der Ihnen bereits bekannten Funktion *removeSparseTerms()*.
+- - -
+```{r "10__21",fig.height=10}
+#Wenden Sie die Funktion norm_eucl() auf die DTM_tfidf an
+#und speichern Sie das Ergebnis in der Variable DTM_tfidf_norm
+DTM_tfidf_norm<-norm_eucl(x=DTM_tfidf)
+#Wenden Sie die Funktion removeSparseTerms() auf die DTM_tfidf_norm an
+#und speichern Sie das Ergebnis in der Variable DTM_tfidf_dense
+DTM_tfidf_dense<-removeSparseTerms(x=DTM_tfidf_norm, sparse=0.99)
+```
+Nachdem die DTM entsprechend aufbereitet wurde, lassen sich auf dieser Basis nun sinnvolle Cluster bilden. 
+- - -
+*Aufgabe*:  Wenden Sie die Funktion *kmeans(x, centers)* auf die *DTM_tfidf_dense* an, sodass die initialen Clusterzentren zufällig gewählt werden und **fünf** Cluster entstehen. Andere Eingabeparameter der Funktion können Sie vernachlässigen. Lassen Sie sich anschließend die Anzahl der Dokumente in jedem Cluster anzeigen.
+- - -
+```{r "10__22",fig.height=10}
+#Der Seed wird gesetzt um reproduzierbare Cluster zu erzeugen
+set.seed(1806)
+#Bilden Sie auf Basis der DTM_tfidf_dense fünf Cluster mit Hilfe
+#der Funktion kmeans() und speichern Sie das Ergebnis in
+#der Variable k_clusters_bin
+k_clusters_tfidf<-kmeans(x=DTM_tfidf_dense, centers =5)
+#Lassen Sie sich das die Anzahl der Dokumente in jedem Cluster, die in der
+#Variable k_cluster_tfidf enthalten sind mit print() ausgeben.
+print(k_clusters_tfidf$size)
+```
+Wie Sie sehen, ist der Großteil der Dokumente in Cluster 3 gelandet. Die meisten Filmkritiken scheinen wohl sehr viele ähnliche und allgemeine Wörter zu verwenden. Dies hat sich auch in der Wordcloud von Exercise 9 widergespiegelt. Nichtsdestotrotz können auch bestimmte Themen aus den kleineren Clustern hervorstechen. Untersuchen wir daher das nächstgrößere Cluster 5 auf die häufigsten Terme innerhalb der Dokumente.  
+Hierzu extrahieren wir zunächst alle Dokumentennamen aus Cluster 5, um anschließend die entsprechenden Zeilen zu diesen Dokumenten aus der DTM auszuwählen. Mit den ausgewählten Zeilen der DTM verfahren wir analog zu Exercise 9, um die entsprechende Wordcloud zu diesem DTM-Ausschnitt zu erstellen. Führen Sie den folgenden Code aus, um die genannten Schritte auszuführen und betrachten Sie die Wordcloud zu Cluster 5. Können Sie ein Genre bzw. Thema erkennen?
+```{r "10__23",fig.height=10}
+#Extraktion aller Dokumentennamen aus Cluster 5
+moviefiles_cluster5<-names(x=k_clusters_tfidf$cluster[k_clusters_tfidf$cluster==5])
+#Auswählen der Dokumente aus der DTM_tfidf_dense,
+#die Cluster 5 zugeordnet wurden.
+DTM_tfidf_cluster5<-DTM_tfidf_dense[moviefiles_cluster5,]
+#Erzeugt einen Dataframe aus den Spaltensummen der
+#DTM_tfidf_cluster5 und ordnet das Ergebnis absteigend 
+freq_cluster5 <- data.frame(sort(x = colSums(x = as.matrix(DTM_tfidf_cluster5)), decreasing = TRUE))
+#Erzeugt eine Wordcloud aus den maximal 50 häufigsten Termen 
+#gewichtet mit ihrer Häufigkeit
+wordcloud(words = rownames(x = freq_cluster5), freq = freq_cluster5[,1],max.words = 50, scale = c(3,1), colors = brewer.pal(3, "Dark2"))
+```
+
+
+***
+
+### Award: Text Clustering
+Toll! Sie haben das gesamte Problem Set gemeistert! 
+Sie sind nun in der Lage, unstrukturierte Textdaten zu clustern, beispielsweise um Themen zu identifizieren! Ihr Wissen im Text Mining-Bereich geht nun schon über die Grundlagen hinaus. Der nächste Schritt ist das Klassifizieren von Daten, um Ihre Wissensbasis abzurunden.
+
+***
+
+
+
+
+*Anmerkungen:*  
+* *Dieses Problem Set wurde mit dem Package 'RTutor' von Prof. Dr. Sebastian Kranz von der Universität Ulm erstellt. Weitere Informationen zu diesem Package und den RTutor-Problem Sets finden Sie auf der GitHub-Seite* <https://github.com/skranz/RTutor>.  
+* *Informationen zu den einzelnen Befehlen sind - falls nicht anders angegeben - den jeweiligen R-Hilfeseiten entnommen. Dort finden Sie auch weitere Informationen zu den einzelnen Befehlen.* 
+* *Inspirationen zu den Aufgaben kamen außerdem unter anderem aus Pang et. al (2002), Pang und Lee (2004) und  https://rstudio-pubs-static.s3.amazonaws.com/132792_864e3813b0ec47cb95c7e1e2e2ad83e7.html.* 
+* *Alle Quellenangaben finden Sie im Literaturverzeichnis (Exercise LV).*
+
+## Exercise LV -- Literaturverzeichnis
+### Packages:
+* Kranz, Sebastian (2015): RTutor: R problem sets with automatic test of solution and hints. R package version 2015.12.16. 
+* Kross, Sean; Carchedi, Nick; Bauer, Bill; Grdina, Gina (2016): swirl: Learn R, in R. R package version 2.4.2, URL: https://CRAN.R-project.org/package=swirl. 
+* R Core Team (2016): R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria, URL: https://www.R-project.org/. 
+* Stephens, Jeremy (2016): yaml: Methods to Convert R Data to YAML and Back. R package version 2.1.14, URL: https://CRAN.R-project.org/package=yaml. 
+
+### Packagebeschreibungen/Hilfeseiten:
+* SnowballC (2015): Package 'SnowballC', URL:
+https://cran.r-project.org/web/packages/SnowballC/SnowballC.pdf
+* tm (2017): Package 'tm', URL:
+https://cran.r-project.org/web/packages/tm/tm.pdf
+
+
+### Buch-, Paper- und Onlinequellen:
+* Pang, B., and L. Lee (2004): A sentimental education: Sentiment analysis using subjectivity summarization based on minimum cuts. Proceedings of the 42nd annual meeting on Association for Computational Linguistics. Association for Computational Linguistics
+* Pang, B., Lee, L., & Vaithyanathan (2002): Thumbs up? sentiment classification using machine learning techniques. In Proceedings of the ACL-02 conference on Empirical methods in natural language processing-Volume 10. Association for Computational Linguistics.
+* https://rstudio-pubs-static.s3.amazonaws.com/132792_864e3813b0ec47cb95c7e1e2e2ad83e7.html, aufgerufen am 02.06.2017
+

@@ -1,0 +1,36 @@
+{"type":["init_ps"],"time":["2017-06-09 19:59:58"],"user":["default_user"],"umph":[1497031198.398],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2017-06-09 20:00:44"],"user":["default_user"],"umph":[1497031244.4833],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2017-06-09 20:08:32"],"user":["default_user"],"umph":[1497031712.6993],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2017-06-09 23:17:48"],"user":["default_user"],"umph":[1497043068.6359],"ok":[true]}
+,
+{"type":["check_chunk"],"time":["2017-06-09 23:18:00"],"user":["default_user"],"umph":[1497043080.5897],"ok":[true],"chunk":[1],"ex":[1],"e.ind":[0],"code":["#Laden des Packages 'tm', um Methoden des Text Mining verwenden zu können\nlibrary(tm)\n#Separates Einlesen der Datensätze für positiv und negativ bewertete Filme\npos_movie<-DirSource(directory = \"./pos\")\nneg_movie<-DirSource(directory = \"./neg\")\n#Speichern der Daten jeweils in einem VCorpus (\"Volatile Corpus\")\npos_corpus<-VCorpus(x=pos_movie)\nneg_corpus<-VCorpus(x=neg_movie)\n#Alle Daten in einem  Vektor zusammenfassen\nfull_corpus<-c(pos_corpus,neg_corpus)\n#Details über das dritte Element der Datensätze anzeigen\npos_corpus[[3]]$meta\nneg_corpus[[3]]$meta\n#Ausgabe des dritten Elements der Datensätze\npos_corpus[[3]]$content\n#- - -\nneg_corpus[[3]]$content"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-06-09 23:18:27"],"user":["default_user"],"umph":[1497043107.2602],"ok":[true],"chunk":[2],"ex":[1],"e.ind":[0],"code":["#Wenden Sie den oben beschriebenen Befehl an und speichern Sie das\n#Ergebnis in der Variable DTM_tf\nDTM_tf <- DocumentTermMatrix(x=full_corpus,\n                          control=list(\n                            stopwords=TRUE,\n                            removeNumbers=TRUE,\n                            removePunctuation=TRUE,\n                            tolower=TRUE,\n                            stripWhitespace=TRUE,\n                            stemming=FALSE))\n\n#Geben Sie anschließend das Ergebnis für die DTM_tf \n#mit dem Befehl print() aus\nprint(DTM_tf)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-06-09 23:18:39"],"user":["default_user"],"umph":[1497043119.6022],"ok":[true],"chunk":[3],"ex":[1],"e.ind":[0],"code":["#Wenden Sie den Befehl inspect() wie in der Aufgabe beschrieben\n#auf die DTM_tf an\ninspect(x=DTM_tf[1:10,1000:1100])"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-06-09 23:18:44"],"user":["default_user"],"umph":[1497043124.2616],"ok":[true],"chunk":[4],"ex":[1],"e.ind":[0],"code":["#Wenden Sie den Befehl findFreqTerms() auf die DTM_tf an und\n#lassen Sie sich die Terme ausgeben, die \n#mindestens 1000 mal im TextCorpus auftreten\nfindFreqTerms(x=DTM_tf, lowfreq=1000)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-06-09 23:18:50"],"user":["default_user"],"umph":[1497043130.9948],"ok":[true],"chunk":[5],"ex":[1],"e.ind":[0],"code":["#Laden des Packages 'wordcloud', um die Funktion wordcloud() verwenden zu können\nlibrary(wordcloud)\n#Erzeugt einen Dataframe aus den Spaltensummen der DTM_tf und\n#ordnet das Ergebnis absteigend \nfreq_tf <- data.frame(sort(x = colSums(x = as.matrix(DTM_tf)), decreasing = TRUE))\n\n#Erzeugt eine Wordcloud aus den maximal 50 häufigsten Termen \n#gewichtet mit ihrer Häufigkeit\nwordcloud(words = rownames(x = freq_tf), freq = freq_tf[,1], max.words = 50, scale = c(2,.5), colors = brewer.pal(3, \"Dark2\"))"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-06-09 23:19:12"],"user":["default_user"],"umph":[1497043152.5313],"ok":[true],"chunk":[6],"ex":[1],"e.ind":[0],"code":["#Erstellen Sie wie in der Aufgabe beschrieben die DTM_tfidf mit der invertierten \n#Termfrequenz als Gewichtungsmethode\n#Geben Sie anschließend wieder das Ergebnis für die Document Term Matrix aus\nDTM_tfidf <- DocumentTermMatrix(x=full_corpus,\n                          control=list(\n                            stopwords=TRUE,\n                            removeNumbers=TRUE,\n                            removePunctuation=TRUE,\n                            tolower=TRUE,\n                            stripWhitespace=TRUE,\n                            stemming=FALSE,\n                            weighting=weightTfIdf))\n#Geben Sie anschließend das Ergebnis für die DTM_tfidf \n#mit dem Befehl print() aus\nprint(DTM_tfidf)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-06-09 23:19:25"],"user":["default_user"],"umph":[1497043165.5753],"ok":[true],"chunk":[7],"ex":[1],"e.ind":[0],"code":["#Wenden Sie den Befehl inspect nun auf die *DTM_ifidf* an\ninspect(x=DTM_tfidf[1:10, 1000:1100])"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-06-09 23:19:32"],"user":["default_user"],"umph":[1497043172.2501],"ok":[true],"chunk":[8],"ex":[1],"e.ind":[0],"code":["\n#Erzeugt einen Dataframe aus den Spaltensummen der DTM_tf und\n#ordnet das Ergebnis absteigend \nfreq_tfidf <- data.frame(sort(x = colSums(x = as.matrix(DTM_tfidf)), decreasing = TRUE))\n\n#Erzeugt eine Wordcloud aus den maximal 50 häufigsten Termen \n#gewichtet mit ihrer Häufigkeit\nwordcloud(words = rownames(x = freq_tfidf), freq = freq_tfidf[,1], max.words = 50, scale = c(1,.25), colors = brewer.pal(3, \"Dark2\"))"],"message":[""]}
+,
+{"type":["init_ps"],"time":["2017-06-09 23:24:11"],"user":["default_user"],"umph":[1497043451.4688],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2017-06-15 12:18:48"],"user":["default_user"],"umph":[1497521928.64],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2017-06-15 12:20:05"],"user":["default_user"],"umph":[1497522005.8471],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-04-11 23:29:48"],"user":["default_user"],"umph":[1523482188.3352],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-04-11 23:59:22"],"user":["default_user"],"umph":[1523483962.5803],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-04-12 00:01:49"],"user":["default_user"],"umph":[1523484109.9514],"ok":[true]}
+,

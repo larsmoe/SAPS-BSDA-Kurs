@@ -1,0 +1,184 @@
+{"type":["init_ps"],"time":["2017-05-18 13:51:31"],"user":["Seb"],"umph":[1495108291.6869],"ok":[true]}
+,
+{"type":["check_chunk"],"time":["2017-05-18 13:51:42"],"user":["Seb"],"umph":[1495108302.7005],"ok":[true],"chunk":[1],"ex":[1],"e.ind":[0],"code":["#Lade das Package igraph\nlibrary(igraph)"],"message":[""]}
+,
+{"type":["init_ps"],"time":["2017-05-18 13:54:07"],"user":["Seb"],"umph":[1495108447.6534],"ok":[true]}
+,
+{"type":["check_chunk"],"time":["2017-05-18 13:54:19"],"user":["Seb"],"umph":[1495108459.6331],"ok":[true],"chunk":[3],"ex":[2],"e.ind":[0],"code":["#Erstellung eines Graphen mit 4 Knoten, von denen die Knoten 1, 2 und 3\n#miteinander verbunden sind\ngraph_example <- make_graph(edges = c(1,2, 2,3, 3,1), n=4)\n#Plotten des Graphen graph_example\nplot(x = graph_example)"],"message":[""]}
+,
+{"type":["init_ps"],"time":["2018-03-26 11:29:45"],"user":["default_user"],"umph":[1522056585.4444],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-03-26 13:04:38"],"user":["default_user"],"umph":[1522062278.3338],"ok":[true]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:04:55"],"user":["default_user"],"umph":[1522062295.3969],"ok":[true],"chunk":[1],"ex":[1],"e.ind":[0],"code":["#Lade das Package igraph\nlibrary(igraph)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:05:01"],"user":["default_user"],"umph":[1522062301.0443],"ok":[true],"chunk":[2],"ex":[1],"e.ind":[0],"code":["#Vollständiger Graph mit 40 Knoten\nfg <- make_full_graph(40)\nplot(fg, vertex.size=10, vertex.label=NA)\n\n#Baum mit 40 Knoten\ntr <- make_tree(40, children = 3, mode = \"undirected\")\nplot(tr, vertex.size=10, vertex.label=NA)\n\n# Erdos-Renyi Zufallsgraph \ner <- sample_gnm(n=100, m=40) \nplot(er, vertex.size=6, vertex.label=NA)  \n\n# Watts-Strogatz Small-World-Graph\nsw <- sample_smallworld(dim=2, size=10, nei=1, p=0.1)\nplot(sw, vertex.size=6, vertex.label=NA, layout=layout_in_circle)\n \n# Barabasi-Alberts Modell für skalenfreie Graphen\n ba <-  sample_pa(n=100, power=1, m=1,  directed=F)\n plot(ba, vertex.size=6, vertex.label=NA)\n"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:05:14"],"user":["default_user"],"umph":[1522062314.2812],"ok":[true],"chunk":[3],"ex":[2],"e.ind":[0],"code":["#Erstellung eines Graphen mit 4 Knoten, von denen die Knoten 1, 2 und 3\n#miteinander verbunden sind\ngraph_example <- make_graph(edges = c(1,2, 2,3, 3,1), n=4)\n#Plotten des Graphen graph_example\nplot(x = graph_example)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:05:17"],"user":["default_user"],"umph":[1522062317.5757],"ok":[true],"chunk":[4],"ex":[2],"e.ind":[0],"code":["#Erstellen Sie einen Graph wie oben beschrieben und speichern Sie ihn in\n#der Variable graph_d1\ngraph_d1 <- make_graph(edges=c(1,2, 1,3, 1,4, 3,5), n=5)\n#Plotten Sie nun den Graphen graph_d1\nplot(x = graph_d1)\n"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:05:20"],"user":["default_user"],"umph":[1522062320.2141],"ok":[true],"chunk":[5],"ex":[2],"e.ind":[0],"code":["#Erstellen Sie den in der Aufgabenstellung beschriebenen ungerichteten Graphen\n#und speichern Sie ihn anschließend in der Variable graph_ud1\ngraph_ud1 <- make_graph(edges=c(1,2,1,3,1,4,3,5), n=5, directed = FALSE)\n#Plotten Sie den Graphen graph_ud1\nplot(x = graph_ud1)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:05:22"],"user":["default_user"],"umph":[1522062322.8721],"ok":[true],"chunk":[6],"ex":[2],"e.ind":[0],"code":["#Erstelle einen Graphen mit symbolischer Notation\ngraph_s1 <- graph_from_literal(1-+2, 2-+3, 3-+1)\n#Plotte den Graphen graph_s1\nplot(x = graph_s1)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:05:25"],"user":["default_user"],"umph":[1522062325.542],"ok":[true],"chunk":[7],"ex":[2],"e.ind":[0],"code":["#Erstellen Sie den oben beschriebenen Graphen und speichern Sie ihn\n#in der Variable graph_n1\ngraph_n1 <- make_graph(edges=c(\"Mike\", \"Max\", \"Mike\", \"Michael\"), \n                      directed=FALSE)\n#Zeichnen Sie den Graphen\nplot(x=graph_n1)\n"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:05:27"],"user":["default_user"],"umph":[1522062327.8862],"ok":[true],"chunk":[8],"ex":[2],"e.ind":[0],"code":["#Erstellen des oben beschriebenen Graphen und Speichern in \n#der Variable graph_n2\ngraph_n2 <- make_graph(edges=c(\"Mike\", \"Max\", \"Mike\", \"Michael\"), \n                      directed=FALSE, isolates = c(\"Manuel\", \"Lisa\"))\n#Plotten des Graphen graph_n2\nplot(x = graph_n2)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:05:30"],"user":["default_user"],"umph":[1522062330.6523],"ok":[true],"chunk":[9],"ex":[2],"e.ind":[0],"code":["#Lassen Sie sich die Knoten von graph_d1 ausgeben\nV(graph = graph_d1)\n#Lassen Sie sich die Kanten von graph_d1 ausgeben\nE(graph = graph_d1)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:15:14"],"user":["default_user"],"umph":[1522062914.1822],"ok":[true],"chunk":[9],"ex":[2],"e.ind":[0],"code":["#Lassen Sie sich die Knoten von graph_d1 ausgeben\nV(graph = graph_d1)\n#Lassen Sie sich die Kanten von graph_d1 ausgeben\nE(graph = graph_d1)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:15:17"],"user":["default_user"],"umph":[1522062917.4024],"ok":[true],"chunk":[10],"ex":[2],"e.ind":[0],"code":["#Lassen Sie sich die Knoten von graph_n2 ausgeben\nV(graph = graph_n2)\n#Lassen Sie sich die Kanten von graph_n2 ausgeben\nE(graph = graph_n2)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:15:22"],"user":["default_user"],"umph":[1522062922.1622],"ok":[true],"chunk":[11],"ex":[2],"e.ind":[0],"code":["#Adjazenzmatrix von graph_d1 ausgeben lassen\ngraph_d1[]"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:15:25"],"user":["default_user"],"umph":[1522062925.0187],"ok":[true],"chunk":[12],"ex":[2],"e.ind":[0],"code":["#Lassen Sie sich die Adjazenzmatrix von graph_ud1 anzeigen\ngraph_ud1[]"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:15:26"],"user":["default_user"],"umph":[1522062926.959],"ok":[true],"chunk":[13],"ex":[2],"e.ind":[0],"code":["#Matrix erstellen\nmat1 <- matrix(data=c(0,1,1,1,1,0,0,0,1,0,0,1,1,0,1,0), nrow=4, ncol=4,\n               dimnames = list(c(\"Anna\", \"Julia\", \"Mia\", \"Jenny\"),\n                               c(\"Anna\", \"Julia\", \"Mia\", \"Jenny\")))\n#Matrix ausgeben lassen\nmat1"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:15:30"],"user":["default_user"],"umph":[1522062930.1616],"ok":[true],"chunk":[14],"ex":[2],"e.ind":[0],"code":["#Erzeugen Sie einen ungerichteten Graph aus der Adjazenzmatrix mat1 und\n#speichern Sie ihn in der Variable graph_mat1\ngraph_mat1 <- graph_from_adjacency_matrix(adjmatrix = mat1, mode = \"undirected\")\n#Plotten Sie den Graph graph_mat1\nplot(x = graph_mat1)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:15:33"],"user":["default_user"],"umph":[1522062933.2047],"ok":[true],"chunk":[15],"ex":[2],"e.ind":[0],"code":["#Einlesen der beiden Datensätze und Speichern in den Variablen vertices und edges\nvertices <- read.csv(file = \"dataset1_nodes.csv\")\nedges <- read.csv(file = \"dataset1_edges.csv\")"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:15:35"],"user":["default_user"],"umph":[1522062935.5943],"ok":[true],"chunk":[16],"ex":[2],"e.ind":[0],"code":["#Lassen Sie die ersten sechs Zeilen von vertices ausgeben\nhead(x = vertices)\n#Lassen Sie die ersten sechs Zeilen von edges ausgeben\nhead(x = edges)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:15:38"],"user":["default_user"],"umph":[1522062938.3081],"ok":[true],"chunk":[17],"ex":[2],"e.ind":[0],"code":["#Erzeugen Sie einen gerichteten Graph aus den Datensätzen edges und vertices\n#und speichern Sie ihn in der Variable graph_data1\ngraph_data1 <- graph_from_data_frame(d=edges, directed = TRUE, vertices=vertices)\n#Plotten Sie den Graphen graph_data1\nplot(x=graph_data1)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:15:41"],"user":["default_user"],"umph":[1522062941.1604],"ok":[true],"chunk":[18],"ex":[2],"e.ind":[0],"code":["#Hilfsvariablen zur Definition der Farben\ncols_edges <- c(\"red\", \"blue\")\ncols_vertices <- c(\"white\", \"yellow\", \"orange\")\n#Fortgeschrittenes Plotten des Graphen graph_data1\nplot(graph_data1, edge.label = E(graph_data1)$type, \n     edge.color = cols_edges[(E(graph_data1)$type==\"mention\") +1],\n     vertex.color = cols_vertices[V(graph_data1)$media.type],\n     edge.arrow.size = 1)\n#Erstellung der Legende zum Plot\nlegend(x=\"bottomright\", legend = c(\"Newspaper\", \"TV\", \"Online\"), \n       fill=c(\"white\", \"yellow\", \"orange\"))"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:15:51"],"user":["default_user"],"umph":[1522062951.7478],"ok":[true],"chunk":[19],"ex":[3],"e.ind":[0],"code":["#Einlesen der beiden Datensätze und Speichern in den Variablen vertices und edges\nvertices<-read.csv(file = \"dataset1_nodes.csv\")\nedges<-read.csv(file = \"dataset1_edges.csv\")"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:15:56"],"user":["default_user"],"umph":[1522062956.2385],"ok":[true],"chunk":[20],"ex":[3],"e.ind":[0],"code":["#Erzeugen eines gerichteten Graphen aus den Datensätzen \n#edges und vertices und Speichern in graph_data1\ngraph_data1 <- graph_from_data_frame(d=edges, directed = TRUE, \n                                    vertices=vertices)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:15:59"],"user":["default_user"],"umph":[1522062959.3599],"ok":[true],"chunk":[21],"ex":[3],"e.ind":[0],"code":["#Lassen Sie sich die Namen der Kantenattribute von graph_data1 anzeigen\nedge_attr_names(graph = graph_data1)\n#Lassen Sie sich die Namen der Knotenattribute von graph_data1 anzeigen\nvertex_attr_names(graph = graph_data1)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:16:01"],"user":["default_user"],"umph":[1522062961.8153],"ok":[true],"chunk":[22],"ex":[3],"e.ind":[0],"code":["#Lassen Sie sich die Werte des zweiten Knotenattributs\n#von graph_data1 ausgeben\nV(graph = graph_data1)$media"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:16:03"],"user":["default_user"],"umph":[1522062963.7572],"ok":[true],"chunk":[23],"ex":[3],"e.ind":[0],"code":["#Ausgabe der ersten sechs Zeilen beider Data Frames\nhead(x = vertices)\nhead(x = edges)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:16:06"],"user":["default_user"],"umph":[1522062966.3474],"ok":[true],"chunk":[24],"ex":[3],"e.ind":[0],"code":["#Plotten Sie mit dem Befehl plot und den oben beschriebenen Argumenten\n#den Graphen graph_data1 mit Kantengewichten\nplot(x = graph_data1, edge.label = E(graph = graph_data1)$weight)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:18:35"],"user":["default_user"],"umph":[1522063115.0601],"ok":[true],"chunk":[25],"ex":[3],"e.ind":[0],"code":["#Erzeuge einen ungerichteten Graphen\ngraph_weighted <- make_graph(edges = c(1,2,1,3,4,5,4,6,5,6), n = 8, \n                             directed = FALSE)\n#Füge den Kanten das Attribut weight hinzu\nE(graph = graph_weighted)$weight <- c(3,6,8,2,7)\n#Plotte den Graphen mit Kantengewichten\nplot(x = graph_weighted, edge.label = E(graph = graph_weighted)$weight)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:18:38"],"user":["default_user"],"umph":[1522063118.7475],"ok":[true],"chunk":[26],"ex":[3],"e.ind":[0],"code":["#Fügen Sie den Knoten des Graphen graph_weighted das Attribut name hinzu,\n#indem Sie die oben angegebenen Namen in einem Character-Vektor übergeben\n#Vorsicht: Behalten Sie die Reihenfolge der Namen bitte genau so bei!\nV(graph = graph_weighted)$name <- c(\"Anna\", \"Sofie\", \"Peter\", \"Franzi\", \n                                    \"Manuela\", \"Ben\", \"Kai\", \"Sandra\")"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:18:41"],"user":["default_user"],"umph":[1522063121.6516],"ok":[true],"chunk":[27],"ex":[3],"e.ind":[0],"code":["#Plotten Sie den Graph graph_weighted mit Kantengewichten\nplot(x = graph_weighted, edge.label = E(graph_weighted)$weight)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:18:45"],"user":["default_user"],"umph":[1522063125.5117],"ok":[true],"chunk":[28],"ex":[3],"e.ind":[0],"code":["#Erzeugung und Plotten von fünf Graphen (zwei ungerichtete, drei gerichtete)\ngraph_1 <- make_graph(edges = c(1,2, 2,5, 3,4, 3,5, 3,6, 4,6, 5,1), n=5, \n                      directed=FALSE) \nplot(x = graph_1)\ngraph_2 <- make_graph(edges = c(1,2, 2,5, 3,4, 3,6, 4,6, 5,1), n=5, \n                      directed=FALSE) \nplot(x = graph_2)\ngraph_3 <- make_graph(edges = c(1,2,2,3,3,1,2,4), n=4) \nplot(x = graph_3)\ngraph_4 <- make_graph(edges = c(3,1,2,4), n=4)\nplot(x = graph_4)\ngraph_5 <- make_graph(edges = c(1,2,2,3,3,1,2,4,4,2), n=4)\nplot(x = graph_5)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:18:50"],"user":["default_user"],"umph":[1522063130.3014],"ok":[true],"chunk":[29],"ex":[3],"e.ind":[0],"code":["#Prüfen Sie, ob graph_1 tatsächlich ein zusammenhängender Graph ist\nis_connected(graph = graph_1)\n#Prüfen Sie, ob graph_3 tatsächlich schwach zusammenhängend ist\nis_connected(graph = graph_3, mode = \"weak\")\n#Prüfen Sie, ob graph_3 tatsächlich nicht stark zusammenhängend ist\nis_connected(graph = graph_3, mode = \"strong\")\n"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:18:52"],"user":["default_user"],"umph":[1522063132.8926],"ok":[true],"chunk":[30],"ex":[3],"e.ind":[0],"code":["#Lassen Sie sich die Komponenten von graph_2 ausgeben\ncomponents(graph = graph_2)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:19:03"],"user":["default_user"],"umph":[1522063143.393],"ok":[true],"chunk":[31],"ex":[4],"e.ind":[0],"code":["#Erzeuge zwei Graphen\n#ungerichteter Graph\ngraph_1 <- make_graph(edges = c(1,2, 2,5, 3,4, 3,5, 3,6, 4,6, 5,1), n=5,\n                      directed=FALSE)\n#gerichteter Graph\ngraph_3 <- make_graph(edges = c(1,2,2,3,3,1,2,4), n=4)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:19:05"],"user":["default_user"],"umph":[1522063145.8316],"ok":[true],"chunk":[32],"ex":[4],"e.ind":[0],"code":["#Plotten des Graphen graph_1\nplot(x = graph_1)\n#Berechnen Sie die Matrix der Entfernungen in graph_1 und \n#speichern Sie diese in der Variable d_1\nd_1<-distances(graph = graph_1)\n#Lassen Sie sich die Variable d_1 anzeigen\nd_1\n"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:19:08"],"user":["default_user"],"umph":[1522063148.5537],"ok":[true],"chunk":[33],"ex":[4],"e.ind":[0],"code":["#Wie groß ist die Entfernung d(1,6)?\nd_1[1,6]"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:19:11"],"user":["default_user"],"umph":[1522063151.2992],"ok":[true],"chunk":[34],"ex":[4],"e.ind":[0],"code":["#Plotten von graph_3\nplot(x = graph_3)\n#Bestimmen Sie die Matrix der Entfernungen, Modus \"out\" von graph_3 und\n#speichern Sie diese in der Variable d_3\nd_3 <- distances(graph = graph_3, mode = \"out\")\n#Wie groß ist die Entfernung von Knoten 1 zu Knoten 4?\nd_3[1,4]\n#Wie groß ist die Entfernung von Knoten 4 zu Knoten 1?\nd_3[4,1]\n"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:19:13"],"user":["default_user"],"umph":[1522063153.6132],"ok":[true],"chunk":[35],"ex":[4],"e.ind":[0],"code":["#Straßennetz als Graph definieren\ngraph_roadnet<-make_graph(edges=c(\"A\",\"B\", \"C\",\"B\", \"B\",\"D\", \n                                 \"B\",\"F\", \"D\",\"E\", \"D\",\"H\",\n                                 \"E\",\"F\", \"F\",\"G\"), \n                          directed = FALSE)\n#Gewichtattribut hinzufügen\nE(graph = graph_roadnet)$weight <- c(1,1,4,10,3,9,2,3)\n#Graph mit Gewichten plotten\nplot(x = graph_roadnet, edge.label = E(graph_roadnet)$weight)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:19:16"],"user":["default_user"],"umph":[1522063156.3843],"ok":[true],"chunk":[36],"ex":[4],"e.ind":[0],"code":["#Wie groß ist die Entfernung zwischen A und F \n#ohne Berücksichtigung des Verkehrs?\ndistances(graph = graph_roadnet, mode = \"out\", weights = NA)[\"A\",\"F\"]\n#Wie groß ist die Entfernung mit Berücksichtigung des Verkehrs?\ndistances(graph = graph_roadnet, mode = \"out\")[\"A\",\"F\"]"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:19:18"],"user":["default_user"],"umph":[1522063158.6495],"ok":[false],"chunk":[37],"ex":[4],"e.ind":[2],"code":["#Ausgabe des kürzesten Pfades von A nach F ohne Berücksichtigung\n#des Verkehrs\nshortest_paths(graph = graph_roadnet, from = \"A\", to = \"F\", \n               weights = NA, output = \"both\")\n#Ausgabe des kürzesten Pfades von A nach F mit Berücksichtigung\n#des Verkehrs\n"],"message":["You have not yet entered all correct commands."]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:19:23"],"user":["default_user"],"umph":[1522063163.8801],"ok":[true],"chunk":[37],"ex":[4],"e.ind":[0],"code":["#Ausgabe des kürzesten Pfades von A nach F ohne Berücksichtigung\n#des Verkehrs\nshortest_paths(graph = graph_roadnet, from = \"A\", to = \"F\", \n               weights = NA, output = \"both\")\n#Ausgabe des kürzesten Pfades von A nach F mit Berücksichtigung\n#des Verkehrs\nshortest_paths(graph = graph_roadnet, from = \"A\", to = \"F\", \n               output=\"both\")"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:19:26"],"user":["default_user"],"umph":[1522063166.95],"ok":[true],"chunk":[38],"ex":[4],"e.ind":[0],"code":["#Ausgabe des kürzesten Pfades von Knoten 3 zu Knoten 4 in graph_3\n#Wählen Sie die Reihenfolge der Argumente bitte wie folgt:\n#graph, from, to, mode, output\nshortest_paths(graph = graph_3, from = 3, to = 4, mode = \"out\",\n               output = \"both\")\n#Plotten von graph_3\nplot(x = graph_3)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:19:30"],"user":["default_user"],"umph":[1522063170.4088],"ok":[true],"chunk":[39],"ex":[4],"e.ind":[0],"code":["#Ergänzen Sie die folgende Funktion und entfernen Sie die Kommentarzeichen\n# path_counter <- function(graph, n){\n#   matrix_result <- graph[]\n#   if(n>1){\n#     for(count in 1:??){\n#     matrix_result <- ??\n#     }\n#   }\n#   number_paths <- ??\n#   return(number_paths)\n# }\n\npath_counter <- function(graph, n){\n  matrix_result <- graph[]\n  if(n>1){\n    for(count in 1:(n-1)){\n    matrix_result <- matrix_result%*%graph[]\n    }\n  }\n  number_paths <- sum(matrix_result)\n  return(number_paths)\n}\n"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2018-03-26 13:19:39"],"user":["default_user"],"umph":[1522063179.2473],"ok":[true],"chunk":[40],"ex":[4],"e.ind":[0],"code":["#Ermitteln Sie die Anzahl der Pfade mit Länge 1 in graph_1\npath_counter(graph = graph_1, n = 1)\n#Ermitteln Sie die Anzahl der Pfade mit Länge 3 in graph_1\npath_counter(graph = graph_1, n = 3)"],"message":[""]}
+,
+{"type":["init_ps"],"time":["2018-03-26 13:40:33"],"user":["default_user"],"umph":[1522064433.74],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-03-26 13:41:54"],"user":["default_user"],"umph":[1522064514.9806],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-03-26 13:42:55"],"user":["default_user"],"umph":[1522064575.8319],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-03-26 13:45:46"],"user":["default_user"],"umph":[1522064746.5001],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-03-26 13:46:28"],"user":["default_user"],"umph":[1522064788.7112],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-03-26 13:47:33"],"user":["default_user"],"umph":[1522064853.3264],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-03-26 13:49:30"],"user":["default_user"],"umph":[1522064970.8921],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-03-26 14:20:22"],"user":["default_user"],"umph":[1522066822.8674],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-03-26 14:21:33"],"user":["default_user"],"umph":[1522066893.2691],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-03-26 15:18:40"],"user":["default_user"],"umph":[1522070320.4176],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-03-26 15:41:29"],"user":["default_user"],"umph":[1522071689.129],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-03-26 15:43:29"],"user":["default_user"],"umph":[1522071809.1552],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-03-26 15:45:13"],"user":["default_user"],"umph":[1522071913.6595],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-03-26 16:13:00"],"user":["default_user"],"umph":[1522073580.7334],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-03-26 16:31:08"],"user":["default_user"],"umph":[1522074668.2808],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-03-26 16:32:33"],"user":["default_user"],"umph":[1522074753.8609],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-03-26 16:34:37"],"user":["default_user"],"umph":[1522074877.0582],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-03-26 16:44:38"],"user":["default_user"],"umph":[1522075478.4196],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2019-04-18 14:10:09"],"user":["default_user"],"umph":[1555589409.3919],"ok":[true]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:10:26"],"user":["default_user"],"umph":[1555589426.0536],"ok":[true],"chunk":[1],"ex":[1],"e.ind":[0],"code":["#Lade das Package igraph\nlibrary(igraph)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:10:30"],"user":["default_user"],"umph":[1555589430.8563],"ok":[true],"chunk":[2],"ex":[1],"e.ind":[0],"code":["#Vollständiger Graph mit 40 Knoten\nfg <- make_full_graph(40)\nplot(fg, vertex.size=10, vertex.label=NA)\n\n#Baum mit 40 Knoten\ntr <- make_tree(40, children = 3, mode = \"undirected\")\nplot(tr, vertex.size=10, vertex.label=NA)\n\n# Erdos-Renyi Zufallsgraph \ner <- sample_gnm(n=100, m=40) \nplot(er, vertex.size=6, vertex.label=NA)  \n\n# Watts-Strogatz Small-World-Graph\nsw <- sample_smallworld(dim=2, size=10, nei=1, p=0.1)\nplot(sw, vertex.size=6, vertex.label=NA, layout=layout_in_circle)\n \n# Barabasi-Alberts Modell für skalenfreie Graphen\n ba <-  sample_pa(n=100, power=1, m=1,  directed=F)\n plot(ba, vertex.size=6, vertex.label=NA)\n"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:10:54"],"user":["default_user"],"umph":[1555589454.5668],"ok":[true],"chunk":[19],"ex":[3],"e.ind":[0],"code":["#Einlesen der beiden Datensätze und Speichern in den Variablen vertices und edges\nvertices<-read.csv(file = \"dataset1_nodes.csv\")\nedges<-read.csv(file = \"dataset1_edges.csv\")"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:10:56"],"user":["default_user"],"umph":[1555589456.3604],"ok":[true],"chunk":[20],"ex":[3],"e.ind":[0],"code":["#Erzeugen eines gerichteten Graphen aus den Datensätzen \n#edges und vertices und Speichern in graph_data1\ngraph_data1 <- graph_from_data_frame(d=edges, directed = TRUE, \n                                    vertices=vertices)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:10:59"],"user":["default_user"],"umph":[1555589459.7212],"ok":[true],"chunk":[21],"ex":[3],"e.ind":[0],"code":["#Lassen Sie sich die Namen der Kantenattribute von graph_data1 anzeigen\nedge_attr_names(graph = graph_data1)\n#Lassen Sie sich die Namen der Knotenattribute von graph_data1 anzeigen\nvertex_attr_names(graph = graph_data1)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:11:03"],"user":["default_user"],"umph":[1555589463.08],"ok":[true],"chunk":[22],"ex":[3],"e.ind":[0],"code":["#Lassen Sie sich die Werte des zweiten Knotenattributs\n#von graph_data1 ausgeben\nV(graph = graph_data1)$media"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:11:05"],"user":["default_user"],"umph":[1555589465.6816],"ok":[true],"chunk":[23],"ex":[3],"e.ind":[0],"code":["#Ausgabe der ersten sechs Zeilen beider Data Frames\nhead(x = vertices)\nhead(x = edges)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:11:09"],"user":["default_user"],"umph":[1555589469.6451],"ok":[true],"chunk":[24],"ex":[3],"e.ind":[0],"code":["#Plotten Sie mit dem Befehl plot und den oben beschriebenen Argumenten\n#den Graphen graph_data1 mit Kantengewichten\nplot(x = graph_data1, edge.label = E(graph = graph_data1)$weight)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:11:13"],"user":["default_user"],"umph":[1555589473.4206],"ok":[true],"chunk":[25],"ex":[3],"e.ind":[0],"code":["#Erzeuge einen ungerichteten Graphen\ngraph_weighted <- make_graph(edges = c(1,2,1,3,4,5,4,6,5,6), n = 8, \n                             directed = FALSE)\n#Füge den Kanten das Attribut weight hinzu\nE(graph = graph_weighted)$weight <- c(3,6,8,2,7)\n#Plotte den Graphen mit Kantengewichten\nplot(x = graph_weighted, edge.label = E(graph = graph_weighted)$weight)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:11:18"],"user":["default_user"],"umph":[1555589478.2525],"ok":[true],"chunk":[26],"ex":[3],"e.ind":[0],"code":["#Fügen Sie den Knoten des Graphen graph_weighted das Attribut name hinzu,\n#indem Sie die oben angegebenen Namen in einem Character-Vektor übergeben\n#Vorsicht: Behalten Sie die Reihenfolge der Namen bitte genau so bei!\nV(graph = graph_weighted)$name <- c(\"Anna\", \"Sofie\", \"Peter\", \"Franzi\", \n                                    \"Manuela\", \"Ben\", \"Kai\", \"Sandra\")"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:11:24"],"user":["default_user"],"umph":[1555589484.0382],"ok":[true],"chunk":[27],"ex":[3],"e.ind":[0],"code":["#Plotten Sie den Graph graph_weighted mit Kantengewichten\nplot(x = graph_weighted, edge.label = E(graph = graph_weighted)$weight)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:11:28"],"user":["default_user"],"umph":[1555589488.7415],"ok":[true],"chunk":[28],"ex":[3],"e.ind":[0],"code":["#Erzeugung und Plotten von fünf Graphen (zwei ungerichtete, drei gerichtete)\ngraph_1 <- make_graph(edges = c(1,2, 2,5, 3,4, 3,5, 3,6, 4,6, 5,1), n=5, \n                      directed=FALSE) \nplot(x = graph_1)\ngraph_2 <- make_graph(edges = c(1,2, 2,5, 3,4, 3,6, 4,6, 5,1), n=5, \n                      directed=FALSE) \nplot(x = graph_2)\ngraph_3 <- make_graph(edges = c(1,2,2,3,3,1,2,4), n=4) \nplot(x = graph_3)\ngraph_4 <- make_graph(edges = c(3,1,2,4), n=4)\nplot(x = graph_4)\ngraph_5 <- make_graph(edges = c(1,2,2,3,3,1,2,4,4,2), n=4)\nplot(x = graph_5)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:11:45"],"user":["default_user"],"umph":[1555589505.6891],"ok":[true],"chunk":[29],"ex":[3],"e.ind":[0],"code":["#Prüfen Sie, ob graph_1 tatsächlich ein zusammenhängender Graph ist\nis_connected(graph = graph_1)\n#Prüfen Sie, ob graph_3 tatsächlich schwach zusammenhängend ist\nis_connected(graph = graph_3, mode = \"weak\")\n#Prüfen Sie, ob graph_3 tatsächlich nicht stark zusammenhängend ist\nis_connected(graph = graph_3, mode = \"strong\")\n"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:11:49"],"user":["default_user"],"umph":[1555589509.7617],"ok":[true],"chunk":[30],"ex":[3],"e.ind":[0],"code":["#Lassen Sie sich die Komponenten von graph_2 ausgeben\ncomponents(graph = graph_2)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:12:00"],"user":["default_user"],"umph":[1555589520.8128],"ok":[true],"chunk":[31],"ex":[4],"e.ind":[0],"code":["#Erzeuge zwei Graphen\n#ungerichteter Graph\ngraph_1 <- make_graph(edges = c(1,2, 2,5, 3,4, 3,5, 3,6, 4,6, 5,1), n=5,\n                      directed=FALSE)\n#gerichteter Graph\ngraph_3 <- make_graph(edges = c(1,2,2,3,3,1,2,4), n=4)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:12:05"],"user":["default_user"],"umph":[1555589525.3558],"ok":[true],"chunk":[32],"ex":[4],"e.ind":[0],"code":["#Plotten des Graphen graph_1\nplot(x = graph_1)\n#Berechnen Sie die Matrix der Entfernungen in graph_1 und \n#speichern Sie diese in der Variable d_1\nd_1<-distances(graph = graph_1)\n#Lassen Sie sich die Variable d_1 anzeigen\nd_1\n"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:12:11"],"user":["default_user"],"umph":[1555589531.2706],"ok":[true],"chunk":[33],"ex":[4],"e.ind":[0],"code":["#Wie groß ist die Entfernung d(1,6)?\nd_1[1,6]"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:12:16"],"user":["default_user"],"umph":[1555589536.1226],"ok":[true],"chunk":[34],"ex":[4],"e.ind":[0],"code":["#Plotten von graph_3\nplot(x = graph_3)\n#Bestimmen Sie die Matrix der Entfernungen, Modus \"out\" von graph_3 und\n#speichern Sie diese in der Variable d_3\nd_3 <- distances(graph = graph_3, mode = \"out\")\n#Wie groß ist die Entfernung von Knoten 1 zu Knoten 4?\nd_3[1,4]\n#Wie groß ist die Entfernung von Knoten 4 zu Knoten 1?\nd_3[4,1]\n"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:12:20"],"user":["default_user"],"umph":[1555589540.5293],"ok":[true],"chunk":[35],"ex":[4],"e.ind":[0],"code":["#Straßennetz als Graph definieren\ngraph_roadnet<-make_graph(edges=c(\"A\",\"B\", \"C\",\"B\", \"B\",\"D\", \n                                 \"B\",\"F\", \"D\",\"E\", \"D\",\"H\",\n                                 \"E\",\"F\", \"F\",\"G\"), \n                          directed = FALSE)\n#Gewichtattribut hinzufügen\nE(graph = graph_roadnet)$weight <- c(1,1,4,10,3,9,2,3)\n#Graph mit Gewichten plotten\nplot(x = graph_roadnet, edge.label = E(graph_roadnet)$weight)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:12:25"],"user":["default_user"],"umph":[1555589545.7007],"ok":[true],"chunk":[36],"ex":[4],"e.ind":[0],"code":["#Wie groß ist die Entfernung zwischen A und F \n#ohne Berücksichtigung des Verkehrs?\ndistances(graph = graph_roadnet, weights = NA)[\"A\",\"F\"]\n#Wie groß ist die Entfernung mit Berücksichtigung des Verkehrs?\ndistances(graph = graph_roadnet)[\"A\",\"F\"]"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:12:35"],"user":["default_user"],"umph":[1555589555.4813],"ok":[true],"chunk":[37],"ex":[4],"e.ind":[0],"code":["#Ausgabe des kürzesten Pfades von A nach F ohne Berücksichtigung\n#des Verkehrs\nshortest_paths(graph = graph_roadnet, from = \"A\", to = \"F\", \n               weights = NA, output = \"both\")\n#Ausgabe des kürzesten Pfades von A nach F mit Berücksichtigung\n#des Verkehrs\nshortest_paths(graph = graph_roadnet, from = \"A\", to = \"F\", \n               output=\"both\")"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-18 14:12:46"],"user":["default_user"],"umph":[1555589566.332],"ok":[true],"chunk":[38],"ex":[4],"e.ind":[0],"code":["#Ausgabe des kürzesten Pfades von Knoten 3 zu Knoten 4 in graph_3\n#Wählen Sie die Reihenfolge der Argumente bitte wie folgt:\n#graph, from, to, mode, output\nshortest_paths(graph = graph_3, from = 3, to = 4, mode = \"out\",\n               output = \"both\")\n#Plotten von graph_3\nplot(x = graph_3)"],"message":[""]}
+,
+{"type":["init_ps"],"time":["2019-04-18 14:14:36"],"user":["default_user"],"umph":[1555589676.5785],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2019-04-18 14:18:20"],"user":["default_user"],"umph":[1555589900.5378],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2019-04-18 14:20:51"],"user":["default_user"],"umph":[1555590051.5037],"ok":[true]}
+,

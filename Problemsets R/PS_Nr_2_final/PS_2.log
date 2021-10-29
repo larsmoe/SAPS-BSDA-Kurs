@@ -1,0 +1,80 @@
+{"type":["init_ps"],"time":["2017-05-06 21:17:42"],"user":["Seb"],"umph":[1494098262.1379],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2017-05-06 21:39:50"],"user":["Seb"],"umph":[1494099590.6808],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2017-06-06 10:33:14"],"user":["Seb"],"umph":[1496737994.3653],"ok":[true]}
+,
+{"type":["check_chunk"],"time":["2017-06-06 10:33:23"],"user":["Seb"],"umph":[1496738003.4285],"ok":[true],"chunk":[1],"ex":[1],"e.ind":[0],"code":["#Lade das Package 'igraphdata'\nlibrary(igraphdata)\n#Lade das igraph-Objekt karate\ndata(karate)\n#Lade das igraph-Objekt kite\ndata(kite)\n#Lade das igraph-Objekt UKfaculty\ndata(UKfaculty)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-06-06 10:33:29"],"user":["Seb"],"umph":[1496738009.6167],"ok":[false],"chunk":[2],"ex":[1],"e.ind":[1],"code":["#Plotten Sie den Graphen karate\n\n#Plotten Sie den Graphen kite\n\n#Plotten Sie den Graphen UKfaculty\n"],"message":["You have not yet entered all correct commands."]}
+,
+{"type":["check_chunk"],"time":["2017-06-06 10:33:32"],"user":["Seb"],"umph":[1496738012.1588],"ok":[true],"chunk":[2],"ex":[1],"e.ind":[0],"code":["#Plotten Sie den Graphen karate\nplot(x=karate)\n#Plotten Sie den Graphen kite\nplot(x=kite)\n#Plotten Sie den Graphen UKfaculty\nplot(x=UKfaculty)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-06-06 10:33:39"],"user":["Seb"],"umph":[1496738019.9912],"ok":[true],"chunk":[3],"ex":[1],"e.ind":[0],"code":["#Bezüglich Graph karate:\n#Lassen Sie sich den Node Degree von \"Mr Hi\" und \"John A\" ausgeben\ndegree(graph=karate, v=c(\"Mr Hi\", \"John A\"))\n#Bezüglich Graph UKfaculty:\n#Lassen Sie sich den In-Degree von Knoten 77 ausgeben\ndegree(graph=UKfaculty, v=77, mode=\"in\")\n#Lassen Sie sich den Out-Degree von Knoten 77 ausgeben\ndegree(graph=UKfaculty, v=77, mode=\"out\")"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-06-06 10:33:42"],"user":["Seb"],"umph":[1496738022.5563],"ok":[true],"chunk":[4],"ex":[1],"e.ind":[0],"code":["#Berechnen Sie die Node Degrees aller Knoten des Graphen kite\n#und speichern Sie den Vektor in der Variable deg_kite\ndeg_kite <- degree(graph=kite)\n#Berechnen Sie nun den Average Degree des Graphen kite\nmean(x=deg_kite)\n"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-06-06 10:33:45"],"user":["Seb"],"umph":[1496738025.1162],"ok":[true],"chunk":[5],"ex":[1],"e.ind":[0],"code":["#Berechnen Sie den Average Degree des Graphen karate\ndeg_karate <- degree(graph=karate)\nmean(x=deg_karate)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-06-06 10:33:49"],"user":["Seb"],"umph":[1496738029.4578],"ok":[false],"chunk":[6],"ex":[1],"e.ind":[0],"code":["#Bezüglich Graph kite:\n#Speichern Sie die Anzahl Knoten in der Variable v_kite\n\n#Speichern Sie die Anzahl Kanten in der Variable e_kite\n\n#Bezüglich Graph karate:\n#Speichern Sie die Anzahl Knoten in der Variable v_karate\n\n#Speichern Sie die Anzahl Kanten in der Variable e_karate\n\n#Übersichtliche Ausgabe der Zahlen\ndata.frame(kite =c(v_kite, e_kite),  karate=c(v_karate, e_karate), \n           row.names=c(\"Anzahl Knoten\", \"Anzahl Kanten\"))"],"message":["evaluation error in \n  data.frame(kite = c(v_kite, e_kite), karate = c(v_karate, e_karate), row.names = c(\"Anzahl Knoten\", \"Anzahl Kanten\"))\n  Error in data.frame(kite = c(v_kite, e_kite), karate = c(v_karate, e_karate), : object 'v_kite' not found\n"]}
+,
+{"type":["check_chunk"],"time":["2017-06-06 10:33:52"],"user":["Seb"],"umph":[1496738032.1397],"ok":[true],"chunk":[6],"ex":[1],"e.ind":[0],"code":["#Bezüglich Graph kite:\n#Speichern Sie die Anzahl Knoten in der Variable v_kite\nv_kite <- vcount(graph=kite)\n#Speichern Sie die Anzahl Kanten in der Variable e_kite\ne_kite <- ecount(graph=kite)\n#Bezüglich Graph karate:\n#Speichern Sie die Anzahl Knoten in der Variable v_karate\nv_karate <- vcount(graph=karate)\n#Speichern Sie die Anzahl Kanten in der Variable e_karate\ne_karate <- ecount(graph=karate)\n#Übersichtliche Ausgabe der Zahlen\ndata.frame(kite =c(v_kite, e_kite),  karate=c(v_karate, e_karate), \n           row.names=c(\"Anzahl Knoten\", \"Anzahl Kanten\"))"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-06-06 10:33:54"],"user":["Seb"],"umph":[1496738034.7017],"ok":[true],"chunk":[7],"ex":[1],"e.ind":[0],"code":["#Lassen Sie sich die Degree Distribution des Graphen kite anzeigen\n#Verwenden Sie dazu die oben definierte Variable deg_kite\nhist(x=deg_kite)\n#Lassen Sie sich zum Vergleich die Degree Distribution\n#des Graphen karate anzeigen\n#Verwenden Sie dazu die oben definierte Variable deg_karate\nhist(x=deg_karate)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-06-06 10:33:58"],"user":["Seb"],"umph":[1496738038.6953],"ok":[true],"chunk":[8],"ex":[1],"e.ind":[0],"code":["#Berechnung von C_i für die Knoten \"Mr Hi\" und \"John A\" in karate\ntransitivity(graph=karate, type=\"local\", vids=c(\"Mr Hi\", \"John A\"), weights=NA)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-06-06 10:34:01"],"user":["Seb"],"umph":[1496738041.3214],"ok":[true],"chunk":[9],"ex":[1],"e.ind":[0],"code":["#Berechnen Sie C_i für alle Knoten in kite\n#und speichern Sie diese in C_local_kite\nC_local_kite <- transitivity(graph=kite, type=\"local\")\n#Berechnen Sie den Average Clustering Coefficient, \n#indem Sie die Variable C_local_kite verwenden\nmean(x=C_local_kite)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-06-06 10:34:03"],"user":["Seb"],"umph":[1496738043.5459],"ok":[true],"chunk":[10],"ex":[1],"e.ind":[0],"code":["#Bestimmen Sie die Entfernungen zwischen allen Knoten\n#des Graphen karate und speichern Sie diese in der Variable dist_karate\n#Setzen Sie das Argument weigths=NA\ndist_karate <- distances(graph=karate, mode=\"out\", weights=NA)\n#Bestimmen Sie den Diameter, indem Sie das Maximum von dist_karate berechnen\n#Speichern Sie den Wert in der Variable dmax_karate\ndmax_karate <- max(x=dist_karate)\n#Lassen Sie dmax_karate ausgeben\ndmax_karate"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-06-06 10:34:05"],"user":["Seb"],"umph":[1496738045.8406],"ok":[true],"chunk":[11],"ex":[1],"e.ind":[0],"code":["#Bestimmen Sie den Network Diameter von karate mit dem Befehl diameter\ndiameter(graph=karate, directed=FALSE, weights=NA)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-06-06 10:34:08"],"user":["Seb"],"umph":[1496738048.259],"ok":[true],"chunk":[12],"ex":[1],"e.ind":[0],"code":["#Bestimmen Sie die Average Path Length des Graphen karate\n#und speichern Sie diese in der Variable dmean_karate\ndmean_karate<-(1/v_karate)*(1/(v_karate-1))*(sum(x=dist_karate)-sum(x=diag(x=dist_karate)))\n#Geben Sie die Variable dmean_karate aus\ndmean_karate"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-06-06 10:34:10"],"user":["Seb"],"umph":[1496738050.7404],"ok":[true],"chunk":[13],"ex":[1],"e.ind":[0],"code":["#Bestimmen Sie die Average Path Length von karate direkt\nmean_distance(graph=karate)"],"message":[""]}
+,
+{"type":["init_ps"],"time":["2017-06-06 10:42:45"],"user":["Seb"],"umph":[1496738565.8032],"ok":[true]}
+,
+{"type":["check_chunk"],"time":["2017-06-06 10:42:51"],"user":["Seb"],"umph":[1496738571.0201],"ok":[true],"chunk":[1],"ex":[1],"e.ind":[0],"code":["#Lade das Package 'igraphdata'\nlibrary(igraphdata)\n#Lade das igraph-Objekt karate\ndata(karate)\n#Lade das igraph-Objekt kite\ndata(kite)\n#Lade das igraph-Objekt UKfaculty\ndata(UKfaculty)"],"message":[""]}
+,
+{"type":["init_ps"],"time":["2017-06-06 10:58:00"],"user":["Seb"],"umph":[1496739480.2745],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2017-06-06 15:56:11"],"user":["default_user"],"umph":[1496757371.4717],"ok":[true]}
+,
+{"type":["check_chunk"],"time":["2017-06-06 15:56:15"],"user":["default_user"],"umph":[1496757375.7761],"ok":[true],"chunk":[1],"ex":[1],"e.ind":[0],"code":["#Lade das Package 'igraphdata'\nlibrary(igraphdata)\n#Lade das igraph-Objekt karate\ndata(karate)\n#Lade das igraph-Objekt kite\ndata(kite)\n#Lade das igraph-Objekt UKfaculty\ndata(UKfaculty)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-06-06 15:56:18"],"user":["default_user"],"umph":[1496757378.9914],"ok":[true],"chunk":[2],"ex":[1],"e.ind":[0],"code":["#Plotten Sie den Graphen karate\nplot(x=karate)\n#Plotten Sie den Graphen kite\nplot(x=kite)\n#Plotten Sie den Graphen UKfaculty\nplot(x=UKfaculty)"],"message":[""]}
+,
+{"type":["init_ps"],"time":["2018-03-26 13:39:59"],"user":["default_user"],"umph":[1522064399.7437],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-04-11 23:24:26"],"user":["default_user"],"umph":[1523481866.9052],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2019-04-25 10:55:56"],"user":["default_user"],"umph":[1556182556.5366],"ok":[true]}
+,
+{"type":["check_chunk"],"time":["2019-04-25 10:56:08"],"user":["default_user"],"umph":[1556182568.29],"ok":[true],"chunk":[1],"ex":[1],"e.ind":[0],"code":["#Lade das Package 'igraphdata'\nlibrary(igraphdata)\n#Lade das igraph-Objekt karate\ndata(karate)\n#Lade das igraph-Objekt kite\ndata(kite)\n#Lade das igraph-Objekt UKfaculty\ndata(UKfaculty)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-25 10:56:10"],"user":["default_user"],"umph":[1556182570.7191],"ok":[true],"chunk":[2],"ex":[1],"e.ind":[0],"code":["#Plotten Sie den Graphen karate\nplot(x=karate)\n#Plotten Sie den Graphen kite\nplot(x=kite)\n#Plotten Sie den Graphen UKfaculty\nplot(x=UKfaculty)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-25 10:56:15"],"user":["default_user"],"umph":[1556182575.6912],"ok":[true],"chunk":[3],"ex":[1],"e.ind":[0],"code":["#Bezüglich Graph karate:\n#Lassen Sie sich den Node Degree von \"Mr Hi\" und \"John A\" ausgeben\ndegree(graph=karate, v=c(\"Mr Hi\", \"John A\"))\n#Bezüglich Graph UKfaculty:\n#Lassen Sie sich den In-Degree von Knoten 77 ausgeben\ndegree(graph=UKfaculty, v=77, mode=\"in\")\n#Lassen Sie sich den Out-Degree von Knoten 77 ausgeben\ndegree(graph=UKfaculty, v=77, mode=\"out\")"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-25 10:56:18"],"user":["default_user"],"umph":[1556182578.5033],"ok":[true],"chunk":[4],"ex":[1],"e.ind":[0],"code":["#Berechnen Sie die Node Degrees aller Knoten des Graphen kite\n#und speichern Sie den Vektor in der Variable deg_kite\ndeg_kite <- degree(graph=kite)\n#Berechnen Sie nun den Average Degree des Graphen kite\nmean(x=deg_kite)\n"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-25 10:56:20"],"user":["default_user"],"umph":[1556182580.4595],"ok":[true],"chunk":[5],"ex":[1],"e.ind":[0],"code":["#Berechnen Sie den Average Degree des Graphen karate\ndeg_karate <- degree(graph=karate)\nmean(x=deg_karate)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-25 10:56:23"],"user":["default_user"],"umph":[1556182583.3868],"ok":[true],"chunk":[6],"ex":[1],"e.ind":[0],"code":["#Bezüglich Graph kite:\n#Speichern Sie die Anzahl Knoten in der Variable v_kite\nv_kite <- vcount(graph=kite)\n#Speichern Sie die Anzahl Kanten in der Variable e_kite\ne_kite <- ecount(graph=kite)\n#Bezüglich Graph karate:\n#Speichern Sie die Anzahl Knoten in der Variable v_karate\nv_karate <- vcount(graph=karate)\n#Speichern Sie die Anzahl Kanten in der Variable e_karate\ne_karate <- ecount(graph=karate)\n#Übersichtliche Ausgabe der Zahlen\ndata.frame(kite =c(v_kite, e_kite), karate=c(v_karate, e_karate), row.names=c(\"Anzahl Knoten\", \"Anzahl Kanten\"))"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-25 10:56:27"],"user":["default_user"],"umph":[1556182587.2082],"ok":[true],"chunk":[7],"ex":[1],"e.ind":[0],"code":["#Lassen Sie sich die Degree Distribution des Graphen kite anzeigen\n#Verwenden Sie dazu die oben definierte Variable deg_kite\nhist(x=deg_kite)\n#Lassen Sie sich zum Vergleich die Degree Distribution\n#des Graphen karate anzeigen\n#Verwenden Sie dazu die oben definierte Variable deg_karate\nhist(x=deg_karate)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-25 10:56:30"],"user":["default_user"],"umph":[1556182590.5351],"ok":[true],"chunk":[8],"ex":[1],"e.ind":[0],"code":["#Berechnung von C_i für die Knoten \"Mr Hi\" und \"John A\" in karate\ntransitivity(graph=karate, type=\"local\", vids=c(\"Mr Hi\", \"John A\"), weights=NA)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-25 10:56:33"],"user":["default_user"],"umph":[1556182593.2633],"ok":[true],"chunk":[9],"ex":[1],"e.ind":[0],"code":["#Berechnen Sie C_i für alle Knoten in kite\n#und speichern Sie diese in C_local_kite\nC_local_kite <- transitivity(graph=kite, type=\"local\")\n#Berechnen Sie den Average Clustering Coefficient, \n#indem Sie die Variable C_local_kite verwenden\nmean(x=C_local_kite)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-25 10:56:37"],"user":["default_user"],"umph":[1556182597.1414],"ok":[true],"chunk":[10],"ex":[1],"e.ind":[0],"code":["#Bestimmen Sie die Entfernungen zwischen allen Knoten\n#des Graphen karate und speichern Sie diese in der Variable dist_karate\n#Setzen Sie das Argument weigths=NA\ndist_karate <- distances(graph=karate, mode=\"out\", weights=NA)\n#Bestimmen Sie den Diameter, indem Sie das Maximum von dist_karate berechnen\n#Speichern Sie den Wert in der Variable dmax_karate\ndmax_karate <- max(x=dist_karate)\n#Lassen Sie dmax_karate ausgeben\ndmax_karate"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-25 10:56:40"],"user":["default_user"],"umph":[1556182600.0555],"ok":[true],"chunk":[11],"ex":[1],"e.ind":[0],"code":["#Bestimmen Sie den Network Diameter von karate mit dem Befehl diameter\ndiameter(graph=karate, directed=FALSE, weights=NA)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-25 10:56:42"],"user":["default_user"],"umph":[1556182602.4743],"ok":[true],"chunk":[12],"ex":[1],"e.ind":[0],"code":["#Bestimmen Sie die Average Path Length des Graphen karate\n#und speichern Sie diese in der Variable dmean_karate\ndmean_karate<-(1/v_karate)*(1/(v_karate-1))*(sum(x=dist_karate)-sum(x=diag(x=dist_karate)))\n#Geben Sie die Variable dmean_karate aus\ndmean_karate"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2019-04-25 10:56:44"],"user":["default_user"],"umph":[1556182604.9765],"ok":[true],"chunk":[13],"ex":[1],"e.ind":[0],"code":["#Bestimmen Sie die Average Path Length von karate direkt\nmean_distance(graph=karate)"],"message":[""]}
+,

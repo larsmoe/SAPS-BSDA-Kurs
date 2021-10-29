@@ -1,0 +1,350 @@
+# Social Media Analytics - Problem Set Nr. 4
+
+
+```{r 'check_ps', include=FALSE}
+
+user.name = '' # set to your user name
+
+library(RTutor)
+check.problem.set('PS_4', ps.dir, ps.file, user.name=user.name, reset=FALSE)
+
+# Run the Addin 'Check Problemset' to save and check your solution
+```
+
+
+*Stand:    26.03.2018*
+
+Willkommen zum vierten RTutor-Problem Set in diesem Modul!  
+Sie finden hier zwei Aufgaben (*Exercise 7* und *Exercise 8*) zu Inhalten aus Kapitel 3 *Social Network Analysis* - konkret zu den Teilen 3.3 *Communities in Netzwerken* und 3.4 *Information Diffusion in sozialen Netzwerken*.
+
+
+## Exercise 7 -- Communities in Netzwerken
+Rufen Sie sich das Netzwerk *karate* zurück in Erinnerung, indem Sie den folgenden Code ausführen.
+```{r "7",fig.height=10}
+#Laden des Packages 'igraphdata'
+library(igraphdata)
+#Laden des igraph-Objektes karate
+data(karate)
+#Plotten des Graphen karate
+plot(x=karate)
+```
+Wie Sie sehen können, sind die Knoten des Graphen - die Teilnehmer des Karateclubs - in zwei verschiedenen Farben dargestellt. Sie stellen die beiden Untergruppen dar, in die der Club nach seiner Aufspaltung zerfallen ist (igraphdata, 2015). Die Rede ist also von sogenannten **Communities**.  
+Im Skript haben Sie bereits einige Methoden zur Community Detection kennengelernt. In dieser Aufgabe wollen wir das *'igraph'*-Package nutzen, um Communities in Graphen ausfindig zu machen. Darüber hinaus werden wir die verschiedenen Algorithmen miteinander vergleichen.
+
+Luke (2015) merkt an, dass das Package *'igraph'* hinsichtlich Community Detection den Großteil der relevanten Algorithmen anbietet und zeigt eine Übersicht über die verschiedenen Algorithmen und ihre Umsetzung in R.
+
+Im Skript werden verschiedene Arten von Algorithmen angesprochen, von denen wir uns den folgenden näher widmen möchten:  
+* Divisive Algorithmen 
+* Agglomerative Algorithmen
+* Maximierung von Zielkriterien
+
+Zu den genannten Kategorien werden wir je ein Beispiel untersuchen.
+
+### a) Divisive Algorithmen - Edge-Betweenness-Algorithmus
+Ein Beispiel eines divisiven Algorithmus ist der **Edge-Betweenness-Algorithmus**. Er ist in R in der Funktion *cluster_edge_betweenness(graph, weights)* implementiert. Die Idee und die darauf basierende Umsetzung wird in igraphdata (2015) folgendermaßen beschrieben:
+
+Die Edge-Betweenness gibt an, auf wie vielen kürzesten Pfaden eine Kante sitzt. Gegeben ein Graph besteht aus mehreren Communities, so verlaufen durch diejenigen Kanten, die die Communities verbinden, sehr viele kürzeste Pfade. Umgekehrt ist die Wahrscheinlichkeit sehr hoch, dass eine Kante zwei Communities trennt, wenn sie eine hohe Edge-Betweenness besitzt. Im Sinne eines divisiven Algorithmus werden daher die Kanten mit der höchsten Edge-Betweenness nach und nach entfernt, um ein hierarchisches Cluster zu bilden.
+- - -
+*Aufgabe*: Wenden Sie den Befehl *cluster_edge_betweenness(graph, weights)* auf den Graphen *karate* an. Das Argument *weights* verwendet dabei automatisch das Kantenattribut *weight* des Graphen *karate*, falls nicht *weights=NULL* gesetzt wird. Um konsistent mit den bisherigen Betrachtungen zu sein, werden wir hier die Gewichte ebenfalls nicht berücksichtigen.
+- - -
+```{r "7__2"}
+#Wenden Sie den oben beschriebenen Befehl an und speichern Sie das
+#Ergebnis in der Variable karate_cl_edgebtw
+
+```
+
+Grundsätzlich liefern fast alle Clusterbefehle in *'igraph'* ein Objekt der Klasse *communities* zurück. Hierauf können unter anderem die folgenden Befehle angewandt werden (Kolaczyk und Csárdi, 2014; Kapitel 4.4.1):  
+* *length(communities)* gibt die Anzahl der Communities im Graphen an 
+* *sizes(communities)* gibt die Anzahl der Knoten in jeder Community an 
+* *membership(communities)* gibt für jeden Knoten die Community an, zu der er gehört 
+* *plot(communities, graph)* stellt die Communities grafisch dar, indem er den Graphen mit farbig markierten Communities plottet 
+* *dendPlot(communities)* stellt das hierarchische Cluster in einem Dendrogramm dar (Näheres dazu später)
+
+Der letzte Befehl (*dendPlot*) ist leider nicht auf den Output jedes Clusterbefehls anwendbar - Voraussetzung hierfür ist, dass ein hierarchisches Cluster zurückgegeben wurde.
+
+- - -
+*Aufgabe*: Wenden Sie nun alle Befehle auf das Communities-Objekt *karate_cl_edgebtw* an.
+- - -
+```{r "7__3",fig.height=10}
+#Aus wie vielen Communities besteht karate?
+
+#Wie groß sind die einzelnen Communities?
+
+#Lassen Sie sich für die ersten sechs Knoten anzeigen, 
+#zu welcher Community sie gehören
+#Tipp: Befehl head (per default Ausgabe von sechs Zeilen)
+
+#Plotten Sie den Graphen mit hervorgehobenen Communities
+#Achten Sie hierbei darauf, dass die Funktion plot(x,y)
+#als Eingabeparameter für x das Communities-Objekt und
+#und für y das Graph-Objekt erhält
+
+#Plotten Sie das Dendrogramm des Clusters.
+#Verwenden Sie auch hier für die Funktion dendPlot(x)
+#das Communities-Objekt für x.
+
+```
+Wie Sie sehen, stellt das Dendrogramm alle möglichen Ebenen des Clustering dar: Von der Unterteilung des Graphen in seine einzelnen Knoten als separate Communities (ganz unten) bis hin zur Betrachtung des Graphen als eine einzige Community (oberste Linie).
+
+Die Communities, die der Edge-Betweenness-Algorithmus ermittelt hat, weichen leider ab von denen, welche im Graphen *karate* als Knotenattribut *Faction* angegeben und farblich im ersten Plot dieser Aufgabe dargestellt sind. Testen wir im Folgenden, was andere Algorithmen ergeben.
+
+### b) Agglomerative Algorithmen - Label-Propagation-Algorithmus
+Im Skript haben Sie bereits ein Beispiel für einen agglomerativen Algorithmus kennengelernt: den **Label-Propagation-Algorihmus**.  
+In *'igraph'* wird dieser im Befehl *cluster_label_prop(graph, weights, initial, fixed)* umgesetzt. Dabei können Gewichte verwendet werden und es kann auch ein Cluster definiert werden, welches zu Beginn des Algorithmus genutzt wird (*initial*). Das Argument *fixed* legt für diesen Fall die Knoten fest, deren Zuordnung im Laufe des Algorithmus nicht verändert werden darf. Diese letzten beiden Argumente werden wir im Folgenden jedoch nicht verwenden.
+
+- - -
+*Aufgabe*: Nutzen Sie im folgenden Code-Chunk den Label-Propagation-Algorithmus, um die Communities des Graphen *karate* zu ermitteln (ohne Berücksichtigung der Gewichte, d.h. *weights=NA*).
+- - -
+```{r "7__4"}
+#Wenden Sie den Label-Propagation-Algorithmus auf karate an
+#und speichern Sie das Ergebnis in der Variable karate_cl_labelprop
+
+```
+
+Wie Sie am Beispiel des Edge-Betweenness-Algorithmus sicherlich bemerkt haben, bieten die beiden Befehle *plot* und *dendPlot* bereits einen so guten Überblick über die ermittelten Communities, dass die Befehle *length*, *size* und *membership* zumindest für einen groben Eindruck überflüssig sind.
+
+- - -
+*Aufgabe*: Da der Label-Propagation-Algorithmus jedoch kein hierarchisches Clustering vornimmt, ist hier der Befehl *dendPlot* nicht anwendbar. Wenden Sie daher den Visualisierungsbefehl *plot* im folgenden Code-Chunk an, um das Clustering des Label-Propagation-Algorithmus darzustellen.
+- - -
+```{r "7__5",fig.height=10}
+#Plotten Sie den Graphen mit hervorgehobenen Communities
+
+```
+Der Label-Propagation-Algorithmus liefert für denselben Graphen nicht immer dieselbe Community-Struktur. Das liegt daran, dass die Zuteilung eines Labels zufällig erfolgt, falls mehrere Labels unter den Nachbarknoten gleich häufig vertreten sind. 
+- - -
+*Aufgabe*: Testen Sie dies, indem Sie den Befehl *cluster_label_prop* noch zwei weitere Male anwenden (jeweils ohne Berücksichtigung der Gewichte) und jeweils den Graphen mit der farblich hervorgehobenen jeweiligen Community-Struktur plotten.
+- - -
+```{r "7__6",fig.height=10}
+#Wenden Sie erneut den Label-Propagation-Algorithmus an und plotten Sie
+#den Graphen mit der Community-Struktur (in einem Befehl)
+
+#Wenden Sie ein drittes Mal den Label-Propagation-Algorithmus an und plotten Sie
+#den Graphen mit der Community-Struktur (in einem Befehl)
+
+```
+
+
+### c) Maximierung von Zielkriterien - Louvain-Algorithmus
+Als Letztes betrachten wir nun den Louvain-Algorithmus - einen Algorithmus, der auf der lokalen Maximierung der Modularität basiert. Er ist im Package *'igraph'* im Befehl *cluster_louvain(graph, weights)* implementiert.
+
+- - -
+*Aufgabe*: Wenden Sie im folgenden Code-Chunk den Befehl auf den Graphen *karate* an (ohne Berücksichtigung der Gewichte, d.h. *weights=NA*).
+- - -
+```{r "7__7"}
+#Wenden Sie den Louvain-Algorithmus auf den Graphen karate an
+#und speichern Sie das Ergebnis in der Variable karate_cl_louvain
+
+```
+
+- - -
+*Aufgabe*: Auch dieses Clustering soll im Folgenden grafisch visualisiert werden. Wenden Sie dazu erneut den *plot*-Befehl an. Der *dendPlot*-Befehl kann hier - wie auch in Aufgabe *b)* - nicht angewendet werden, da der Befehl *cluster_louvain* zwar ein hierarchisches Clustering vornimmt, das zurückgelieferte Objekt jedoch lediglich diejenige Clusteringstruktur (eine Ebene) zurückliefert, die die lokale Modularität maximiert.
+- - -
+```{r "7__8",fig.height=10}
+#Plotten Sie den Graphen mit hervorgehobenen Communities
+
+```
+Wie Sie sehen, gibt dieser Befehl vier Communities an. Leider sind im Output des Befehls keine Informationen über andere Clusterebenen enthalten. Tatsächlich erhält man aus dieser Aufteilung in Communities (Ausnahme Knoten 10) die Aufteilung, welche im Graphen als Knotenattribut *Faction* angegeben ist, indem man die Communities 1 und 2 bzw. die Communities 3 und 4 zu jeweils einer Community zusammenfasst.
+
+Ein Vergleich über alle drei Algorithmen bzw. Befehle hinweg ist in diesem Fall leider wenig sinnvoll, da der Label-Propagation-Algorithmus zufallsbasiert in jedem Durchlauf andere Ergebnisse liefert.
+
+
+## Exercise 8 -- Information Diffusion in Netzwerken
+Die Erfassung und Analyse der Verbreitung von Informationen spielt nicht zuletzt auch für Unternehmen eine wichtige Rolle. In dieser Aufgabe werden Sie in Teil *a)* auf ein fiktives Beispiel die Theoriekenntnisse aus dem Skript anwenden, bevor Sie sich in Teil *b)* dann mit einem der beiden im Skript vorgestellten Modelle auseinandersetzen können.
+
+### a) Information Diffusion: Ein Beispiel
+Im Folgenden betrachten wir ein fiktives Beispiel für Information Diffusion. Die Datei *"InformationDiffExample.csv"* beschreibt, wer wem welche Information weitergegeben hat. Dabei werden zwei Informationen (*A* und *B*) betrachtet. Die Datei *"InformationDiffExample_nodes.csv"* gibt die Namen der Informationsüberträger an.  
+Der folgende Code-Chunk lädt die beiden Dateien jeweils mit dem Befehl *read.csv2(file, header=TRUE)*, speichert sie in den Variablen *data_diff* und *data_diff_nodes* und gibt sie aus. Führen Sie den Code aus.
+```{r "8"}
+#Laden des Datensatzes "InformationDiffExample.csv"
+data_diff <- read.csv2("InformationDiffExample.csv", header=TRUE)
+#Laden des Datensatzes "InformationDiffExample_nodes.csv"
+data_diff_nodes <- read.csv2("InformationDiffExample_nodes.csv", header=TRUE)
+#Ausgabe der Datensätze
+data_diff
+data_diff_nodes
+```
+Wie Sie der Ausgabe des Data Frames entnehmen können, enthält der Data Frame *data_diff* eine Spalte, die angibt, welche *Information* über die Kante weitergegeben wird.
+
+- - -
+*Aufgabe*: Ihre Aufgabe ist es nun, im folgenden Code-Chunk einen Graphen zu erstellen, der die Informationsweitergabe als Kanten darstellt. Die Spalte *Information* wird hierbei automatisch als Kantenattribut übernommen. Plotten Sie anschließend den Graphen. Verwenden Sie dabei das Argument *x* für den Graphen, *edge.label*, um die Kanten mit dem Namen der übermittelten *Information* zu beschriften und *edge.arrow.size=1*, um die Pfeile der gerichteten Kanten für eine bessere Übersichtlichkeit zu verkleinern.
+*Falls Sie sich an den Befehl zur Erstellung eines Graphen aus einem Data Frame nicht mehr erinnern, werfen Sie noch einmal einen Blick auf das Problem Set Nr. 1 Exercise 2.*
+- - -
+```{r "8__2",fig.height=10, fig.width=12}
+#Erstellen Sie einen gerichteten Graphen aus dem Data Frame data_diff
+#und speichern Sie ihn in der Variable g_diff
+
+#Plotten Sie den Graphen g_diff wie oben beschrieben
+
+```
+
+#! addon__quiz__Interaktionsgraph
+<br>
+Im nächsten Schritt wollen wir uns der Information *A* und ihrer Verbreitung im Netzwerk widmen. Das heißt, wir suchen den Graphen, der die Verbreitung der Information *A* darstellt. Der Befehl *subgraph.edges(graph, eids)* aus dem Package *'igraph'* bildet den Teilgraphen von *graph*, der die Kanten mit den in *eids* in einem Vektor angegebenen Indizes besitzt.
+
+- - -
+*Aufgabe*: Verwenden Sie diesen Befehl, um den Subgraphen mit den Kanten zur Übertragung von *A* zu erstellen. Plotten Sie anschließend den reduzierten Graphen.  
+*Tipp:* Der Befehl *which(Bedingung)* gibt die Indizes der Elemente (eines Vektors/eines Data Frames) zurück, welche die *Bedingung* erfüllen.
+- - -
+```{r "8__3",fig.height=10, fig.width=12}
+#Erstellen Sie den Subgraphen zur Information A und
+#speichern Sie ihn in der Variable g_diff_A
+
+#Plotten Sie den Subgraphen g_diff_A mit denselben
+#Argumenten wie im vorherigen Code-Chunk
+
+```
+#! addon__quiz__Diffusionsgraph
+<br>
+Im Skript haben Sie den Begriff **Quelle** kennengelernt. Er beschreibt einen Knoten im Diffusionsgraphen, der keine eingehenden Kanten besitzt und somit Informationen von sich aus verbreitet.
+#! addon__quiz__Quelle
+<br>
+Der Graph *g_diff_A* ist von sehr überschaubarer Größe. Ein "Ablesen" der Quellen eines Diffusionsgraphen ist bei größeren Graphen leider sehr schwer möglich.
+
+- - -
+*Aufgabe*: Wenden Sie daher auf Basis der Definition die passenden Befehle an, um den Index (die Indizes) der Quelle(n) des Diffusionsgraphen *g_diff_A* zu bestimmen. Die notwendigen Schritte sind im Code-Chunk angegeben.
+- - -
+```{r "8__4"}
+#Ermitteln Sie die In-Degrees der Knoten in g_diff_A und
+#speichern Sie das Ergebnis in der Variable g_diff_A_indegree
+
+#Ermitteln Sie diejenigen Knotenindizes, für die g_diff_A_indegree 0 ist
+
+```
+Dieser Output mag auf den ersten Blick etwas verwirrend sein. Er rührt daher, dass die Funktion *degree* als Knoten automatisch die Funktion *V(graph)* betrachtet, welche wiederum die Knoten in einem *benannten* Vektor darstellt. Die erste Zeile des Outputs steht hierbei für die Namen der Knoten mit In-Degree 0 und die zweite Zeile für die Stelle, an der sie in *V(graph)* und daher auch im Vektor *g_diff_A_indegree* stehen (für uns nicht weiter interessant). Wie Sie sehen, liefert das Verfahren automatisch die Namen der Quellen.
+
+Der Diffusionsgraph zur Information *A* besitzt also zwei Knoten, welche diese Information initial verbreiten. Welcher der beiden Knoten spielt dabei die wichtigere Rolle? Um diese Frage zu beantworten, betrachten wir die **Reichweite** der beiden Quellen.  
+Hierzu gibt es verschiedene Herangehensweisen. Eine Möglichkeit ist, zunächst den Subgraph des Graphen *g_diff_A* zu bilden, welcher lediglich die jeweilige Quelle und die von ihr aus erreichbaren Knoten und zugehörigen gerichteten Kanten enthält. Nach dem Plotten kann man die Reichweite des Knotens aus der Grafik ablesen oder sich die Anzahl der Knoten des Graphen berechnen lassen.
+Eine einfachere Möglichkeit ist es, den Befehl *distances(graph, v, mode="out")* auf den Diffusionsgraphen *g_diff_A* anzuwenden. Er gibt die Entfernung (Länge des kürzesten Pfades) von den Knoten in *v* zu allen anderen Knoten an. Alle Knoten, die nicht unendlich weit vom betrachteten Knoten entfernt sind (Entfernung nicht gleich *Inf*) sind daher vom betrachteten Knoten aus direkt oder indirekt erreichbar.
+- - -
+*Aufgabe*: Nutzen Sie diesen Ansatz im folgenden Code-Chunk, um die Reichweiten der beiden Quellen zu bestimmen. Nutzen Sie im Befehl die Namen der Quellen.
+- - -
+```{r "8__5"}
+#Berechnen Sie die Entfernungen von Knoten k1 zu allen anderen
+#Knoten und speichern Sie sie in der Variable dist_diff_A_1
+
+#Lassen Sie sich die Variable dist_diff_A_1 ausgeben
+
+#Überprüfen Sie, ob für die Elemente von dist_diff_A_1
+#die Bedingung "ungleich Inf" erfüllt ist
+
+#Verwenden Sie den Befehl sum(), um die Anzahl der Elemente in 
+#dist_diff_A_1 zu bestimmen, für die die Bedingung erfüllt ist
+#Beachten Sie: Wenn ein boolescher Vektor (TRUE/FALSE-Elemente) 
+#in einer Rechenoperation verwendet wird, wird TRUE als 1 und 
+#FALSE als 0 interpretiert.
+
+```
+Die Reichweite der Quelle *k1* beträgt also 8. Dabei wird die Quelle selbst automatisch mit berücksichtigt.  
+Der folgende Code-Chunk berechnet analog die Reichweite von Knoten *k5*. Führen Sie den Code aus.
+```{r "8__6"}
+#Berechnung der Reichweite von Knoten k5
+sum(x=distances(graph=g_diff_A, v="k5", mode="out") != Inf)
+```
+Die Reichweite der Quelle *k5* beträgt demnach 6 und ist somit geringer als die der Quelle *k1*.
+
+### b) Simulation des SIR-Modells
+Im Skript haben Sie zwei Modelle zur Information Diffusion näher kennengelernt: Das "SIR-Modell" und das "Linear Threshold-Modell". Das klassische Modell "Susceptible-Infected-Recovered (SIR)" kommt ursprünglich aus dem Bereich der Epidemiologie, wird jedoch inzwischen auch als Ausgangspunkt zahlreicher Modelle im Bereich der Information Diffusion verwendet. In dieser Teilaufgabe werden Sie dieses Modell praktisch anwenden. *(Diese Teilaufgabe ist in Teilen aus Kolaczyk und Csárdi (2014) entnommen.)*
+
+Die Funktion *sir* im Package *'igraph'* simuliert das SIR-Modell. Sie benötigt die folgenden Argumente als Input:  
+* *graph*: der für die Simulation zu verwendende Graph  
+* *beta*: die Ansteckungsrate, d.h. die Rate mit der sich ein Knoten mit der Krankheit infiziert (bzw. die Information erhält und damit zum potentiellen Informationsverbreiter wird), wenn einer seiner Nachbarn erkrankt ist (bzw. ihm die Information schickt)  
+* *gamma*: die Erholungsrate, d.h. die Rate, mit der sich ein Infizierter erholt oder stirbt (bzw. mit der ein Informationsverbreiter passiv wird)
+
+Für die Simulation werden wir einen der Graphen testen, den Sie bereits in *Problem Set Nr. 1 Exercise 1* kennengelernt haben: einen Graph nach dem Barabási-Albert-Modell. Führen Sie den folgenden Code aus, um den Graph zu erstellen. Kolaczyk und Csárdi (2014) erklären die Wahl der Parameter mit dem Ziel, Graphen mit etwa derselben Knoten- und Kantenanzahl zu erhalten. Für nähere Informationen zu den einzelnen Argumenten der Befehle empfiehlt es sich, auf die R-Hilfeseiten zurückzugreifen.  
+*Da der Graph sehr groß ist, wird hier auf eine graphische Darstellung verzichtet. Falls Sie sich das Aussehen dieser Art von Graph erneut ins Gedächtnis rufen möchten, können Sie einen Blick auf den entsprechenden Beispielgraphen in Exercise 1 werfen.*
+```{r "8__7"}
+#Zufälliger Graph nach Barabási-Albert-Modell
+g_ba <- sample_pa(n=250, power = 1, m=5, directed = FALSE)
+```
+
+Nachdem wir nun das erste Argument der Funktion *sir* betrachtet haben, widmen wir uns den restlichen beiden Funktionsargumenten. Das Argument *beta* soll in einem ersten Schritt auf $0.5$ gesetzt werden, das Argument *gamma* auf $1.0$.  
+
+- - -
+*Aufgabe*: Wenden Sie nun die Funktion *sir* auf den Graphen *g_ba* an. Die Anzahl der Simulationsdurchläufe wird hierbei per default auf 100 festgesetzt. Plotten Sie anschließend das Ergebnis.
+- - -
+```{r "8__8"}
+#Simulieren Sie das SIR-Modell für den Graphen g_ba
+#und speichern Sie das Ergebnis in der Variable sir_ba
+
+#Plotten Sie die Variable sim_ba in rot
+
+```
+Beim Rückgabewert der Funktion *sir* handelt es sich  um eine Liste. Sie enthält für jede der 100 Simulationsiterationen ein Listenelement. In diesem ist enthalten, zu welchen Zeitpunkten (*times*) etwas passiert ist und wie viele anfällige, gesunde bzw. uninformierte (susceptible) Knoten (*NS*), wie viele infizierte bzw. aktive, informierende (infected) Knoten (*NI*) und wie viele immune oder tote bzw. passive, informierte (recovered/removed) Knoten (*NR*) es zu diesen Zeitpunkten gab.  
+Der *plot*-Befehl trägt für jeden Durchlauf der Simulation die Anzahl der infizierten Knoten (*NI*) über den (für jeden Simulationsdurchlauf evtl. unterschiedlichen) betrachteten Zeitpunkten (*times*) auf. Dem Plot können Sie entnehmen, dass die Anzahl infizierter (bzw. aktiver, informierender) Knoten über die Zeit zunächst sehr schnell und sehr stark ansteigt, bevor sie dann langsam abklingt und sich dem Wert 0 nähert. Die durchgezogene dicke Linie stellt den empirischen Median der Variablen $N_i$ in der Simulation dar; die gestrichelten dicken Linien stellen die empirischen Quantile ($10\%$ und $90\%$) dar.
+
+Über das Argument *comp* im *plot*-Befehl können Sie steuern, ob die Anzahl infizierter Knoten (*"NI"*), die Anzahl anfälliger Knoten (*"NS"*) oder die Anzahl immuner oder toter Knoten (*"NR"*) geplottet werden soll.
+
+- - -
+*Aufgabe*: Lassen Sie sich für die Simulation *sir_ba* auch die beiden anderen Gruppen anzeigen.
+- - -
+```{r "8__9"}
+#Plotten Sie für sim_ba die Anzahl gesunder, anfälliger Knoten (NS)
+#über der Zeit
+
+#Plotten Sie für sim_ba die Anzahl immuner oder toter Knoten (NR)
+#über der Zeit
+
+```
+Wie Sie erkennen können, verhalten sich die Variablen $N_S$ und $N_R$ ähnlich wie im Beispiel im Skript: Die Anzahl der anfälligen, gesunden (bzw. uninformierten) Knoten sinkt zu Beginn sehr schnell und ab etwa einem Viertel der betrachteten Zeitdauer fast nicht mehr während die Anzahl immuner oder toter (bzw. passiver, informierter) Knoten nach einer sehr kurzen Anlaufphase zunächst schnell und dann kaum noch steigt.
+
+Welchen Einfluss des Parameters *beta* (Ansteckungsrate) würden Sie bei einer solchen Simulation auf den Verlauf von $N_i$ erwarten?
+#! addon__quiz__SIR Modell
+  
+- - -
+*Aufgabe*: Überprüfen Sie nun die theoretischen Überlegungen, indem Sie zwei weitere Simulationen durchführen mit *beta=1.0* und *beta=5.0*. Wählen Sie für *gamma* weiterhin den Wert *1.0*.
+- - -
+```{r "8__10"}
+#Speichern Sie in der Variable sir_ba_1 die Simulation für beta=1.0
+
+#Speichern Sie in der Variable sir_ba_5 die Simulation für beta=5.0
+
+```
+
+Der folgende Code-Chunk plottet die Mediane aller drei Simulationen in einer Graphik, um die Simulationen miteinander vergleichen zu können. Die einzelnen Schritte können Sie den Kommentaren im Code entnehmen. Auf diese soll hier nicht detaillierter eingegangen werden. Falls Sie dennoch an einzelnen verwendeten Befehlen interessiert sind, können Sie die entsprechenden Beschreibungen in den R-Hilfeseiten finden. Betrachten Sie den Code und führen Sie ihn anschließend aus.
+```{r "8__11"}
+#Erstellung einer Liste, die alle drei Simulationen für den Graphen g_ba enthält
+sim <- list(sir_ba=sir_ba, sir_ba_1=sir_ba_1, sir_ba_5=sir_ba_5)
+#Bestimmung des größten Zeitsprungs über alle drei Simulationen hinweg
+x.max <- max(x=sapply(X=sapply(X=sim, FUN=time_bins),FUN=max))
+#Bestimmung des größten Werts des Medians von N_I
+#über alle drei Simulationen hinweg
+y.max <- 1.05 * max(x=sapply(X=sapply(X=sim, FUN=function(x) median(x)[["NI"]]),
+                          FUN=max, na.rm=TRUE))
+#Plot des Medians der Simulation sir_ba (beta=0.5)
+plot(x=time_bins(x=sir_ba), y=median(x=sir_ba)[["NI"]],
+     type = "l", lwd=2, col="blue", xlim=c(0,x.max), ylim=c(0,y.max), 
+     xlab="Time", ylab="NI(t)", main = "Ansteckungsrate beta = 0.5")
+#Plot des Medians der Simulation sir_ba_1 (beta=1.0)
+plot(x=time_bins(sir_ba_1),y=median(x=sir_ba_1)[["NI"]],
+     type = "l", lwd=2, col="gold", xlim=c(0,x.max), ylim=c(0,y.max), 
+     xlab="Time", ylab=expression(N[I](t)), main = "Ansteckungsrate beta = 1.0")
+#Plot des Medians der Simulation sir_ba_5 (beta=5.0)
+plot(x=time_bins(sir_ba_5), y=median(x=sir_ba_5)[["NI"]],
+     type = "l", lwd=2, col="red", xlim=c(0,x.max), ylim=c(0,y.max), 
+     xlab="Time", ylab=expression(N[I](t)), main = "Ansteckungsrate beta = 5.0")
+```
+Wie Sie sehen können, hat sich die Intuition bestätigt: Von *beta=0.5* über *beta=1.0* zu *beta=5.0* verläuft die Kurve des Medians der infizierten bzw. aktiven, informierenden Knoten zu Beginn immer steiler, erreicht eine höhere maximale Anzahl infizierter bzw. aktiver, informierender Knoten und fällt dann auch wieder schneller ab.
+
+
+*Anmerkungen:*  
+* *Dieses Problem Set wurde mit dem Package 'RTutor' von Prof. Dr. Sebastian Kranz von der Universität Ulm erstellt. Weitere Informationen zu diesem Package und den RTutor-Problem Sets finden Sie auf der GitHub-Seite* <https://github.com/skranz/RTutor>.  
+* *Informationen zu den einzelnen Befehlen sind - falls nicht anders angegeben - den jeweiligen R-Hilfeseiten entnommen. Dort finden Sie auch weitere Informationen zu den einzelnen Befehlen. Darüber hinaus wurden die Beschreibungen zum Package 'igraph' (igraph (2015)) verwendet.* 
+* *Inspirationen zu den Aufgaben kamen außerdem unter anderem aus Kolaczyk und Csárdi (2014) und Luke (2015).* 
+* *Alle Quellenangaben finden Sie im Literaturverzeichnis (Exercise LV).*
+
+## Exercise LV -- Literaturverzeichnis
+### Packages:
+* Csardi G., Nepusz T. (2006): The igraph software package for complex network research. InterJournal, Complex Systems, S. 1695, URL: http://igraph.org. 
+* Csardi, Gabor (2015): igraphdata: A Collection of Network Data Sets for the 'igraph' Package. R package version 1.0.1, URL: https://CRAN.R-project.org/package=igraphdata. 
+* Kranz, Sebastian (2015): RTutor: R problem sets with automatic test of solution and hints. R package version 2015.12.16. 
+* Kross, Sean; Carchedi, Nick; Bauer, Bill; Grdina, Gina (2016): swirl: Learn R, in R. R package version 2.4.2, URL: https://CRAN.R-project.org/package=swirl. 
+* R Core Team (2016): R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria, URL: https://www.R-project.org/. 
+* Stephens, Jeremy (2016): yaml: Methods to Convert R Data to YAML and Back. R package version 2.1.14, URL: https://CRAN.R-project.org/package=yaml. 
+
+### Packagebeschreibungen/Hilfeseiten:
+* igraph (2015): Package 'igraph', URL: https://cran.r-project.org/web/packages/igraph/igraph.pdf. 
+* igraphdata (2015): Package 'igraphdata', Csardi, Gabor, URL: https://cran.r-project.org/web/packages/igraphdata/igraphdata.pdf. 
+
+### Buch-, Paper- und Onlinequellen:
+* Kolaczyk, Eric; Csárdi, Gábor (2014): Statistical Analysis of Network Data with R. New York: Springer Science+Business Media. 
+* Luke, Douglas A. (2015): A User's Guide to Network Analysis in R. Springer International Publishing Switzerland.

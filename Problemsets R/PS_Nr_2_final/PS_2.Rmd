@@ -1,0 +1,223 @@
+# Social Media Analytics - Problem Set Nr. 2
+
+
+```{r 'check_ps', include=FALSE}
+
+user.name = '' # set to your user name
+
+# To check your problem set, save your file (Ctrl-S) and then run the RStudio Addin 'Check Problemset'
+
+# Alternatively run the following lines 
+library(RTutor)
+ps.dir = getwd() # directory of this file
+ps.file = 'PS_2.Rmd' # name of this file
+check.problem.set('PS_2', ps.dir, ps.file, user.name=user.name, reset=FALSE)
+```
+
+
+*Stand:    26.03.2018*
+
+Willkommen zum zweiten RTutor-Problem Set in diesem Modul!  
+Sie finden hier eine Aufgabe (*Exercise 5*) zu Inhalten aus Kapitel 3 *Social Network Analysis* - konkret zu dem Teil 3.1.4.
+
+## Exercise 5 -- Kennzahlen zur Beschreibung von Netzwerken
+Das Package *'igraphdata'* bietet verschiedene Datensätze zu Netzwerken an, die mit dem Package *'igraph'* bearbeitet werden können. Bei vier Netzwerken aus diesem Package handelt es sich laut der Package-Beschreibung (igraphdata, 2015) um soziale Netzwerke: *"UKfaculty"*, *"karate"*, *"kite"* und *"rfid"*. In den folgenden beiden Aufgaben werden wir die ersten drei davon betrachten, um sie auf verschiedene Eigenschaften zu untersuchen. Dabei liegt der Fokus der aktuellen Aufgabe auf den **grundlegenden Maßen**, die die Knoten und Kanten eines Netzwerks charakterisieren. In *Problem Set Nr.3* werden wir uns insbesondere den Zentralitätsmaßen in Netzwerken widmen.
+
+*Die folgende Aufgabe erfolgt in Anlehnung an Kolaczyk und Csárdi, Kapitel 4.2.1.*
+Laden Sie im folgenden Code-Chunk die drei Netzwerke, die wir im Folgenden betrachten werden, indem Sie den Code ausführen.
+```{r "5"}
+#Lade das Package 'igraphdata'
+library(igraphdata)
+#Lade das igraph-Objekt karate
+data(karate)
+#Lade das igraph-Objekt kite
+data(kite)
+#Lade das igraph-Objekt UKfaculty
+data(UKfaculty)
+```
+- - -
+*Aufgabe:* Verschaffen Sie sich einen Eindruck über die Netzwerke, indem Sie sie plotten.
+- - -
+```{r "5__2",fig.height=10}
+#Plotten Sie den Graphen karate
+
+#Plotten Sie den Graphen kite
+
+#Plotten Sie den Graphen UKfaculty
+
+```
+
+Wie Sie sehen können, sind die drei Netzwerke sehr unterschiedlich. Laut der Beschreibung (igraphdata, 2015) stellen im Netzwerk *karate* (Zachary, 1977) die Knoten Mitglieder eines Karateclubs dar und die Kanten Aktivitäten, welche die Mitglieder gemeinsam unternommen haben; Beim Netzwerk *kite* (Source "Kite" (2017); Krackhardt, 1990) handelt es sich um ein nichtreales soziales Netzwerk mit speziellen Eigenschaften; Das Netzwerk *UKfaculty* (Nepusz  et al., 2008) stellt die Freundschaftsbeziehungen innerhalb einer Fakultät dar.
+
+### a) Gradbasierte Maße - Node Degree und Degree Distribution
+Wie Sie im Skript bereits gelernt haben, gibt der **Node Degree** (Grad) eines Knotens an, wie viele Kanten von ihm ausgehen. Bei gerichteten Graphen unterscheidet man zusätzlich zwischen **In-Degree** (Anzahl eingehender Kanten) und **Out-Degree** (Anzahl ausgehender Kanten).
+
+Im Package *'igraph'* gibt der Befehl *degree(graph, v)* den Node Degree derjenigen Knoten an, die in einem Vektor dem Argument *v* übergeben werden. Per default werden die Node Degrees aller Knoten ausgegeben. Bei gerichteten Graphen muss zusätzlich der Modus (*mode*) *"in"*, *"out"* oder *"total"* festgelegt werden. Wie der Name sagt, erhält man beim *mode="in"* den In-Degree, beim *mode="out"* den Out-Degree und beim *mode="total"* die Summe aus In- und Out-Degree zurück. 
+- - -
+*Aufgabe:* Lassen Sie sich im folgenden Code-Chunk im (ungerichteten) Graphen *karate* den Node Degree vom Karate-Trainer *"Mr Hi"* und dem Präsidenten *"John A"* (igraphdata, 2015) ausgeben, sowie den In- und Out-Degree des Knotens 77 im (gerichteten) Graphen *UKfaculty*.
+- - -
+```{r "5__3"}
+#Bezüglich Graph karate:
+#Lassen Sie sich den Node Degree von "Mr Hi" und "John A" ausgeben
+
+#Bezüglich Graph UKfaculty:
+#Lassen Sie sich den In-Degree von Knoten 77 ausgeben
+
+#Lassen Sie sich den Out-Degree von Knoten 77 ausgeben
+
+```
+
+Bezogen auf das gesamte Netzwerk lässt sich der sogenannte **Average Degree** berechnen - der Durchschnitt der Node Degrees aller Knoten. Im Falle eines gerichteten Graphen ist auch hier zu unterscheiden zwischen dem **Average In-Degree** und dem **Average Out-Degree**. 
+- - -
+*Aufgabe:* Berechnen Sie für den Graphen *kite* und den Graphen *karate* jeweils den *Average Degree*. Beachten Sie, dass es hierfür keine separate Funktion gibt, sodass Sie tatsächlich den Mittelwert (*mean(x)*) der Node Degrees aller Knoten berechnen müssen. Folgen Sie den Angaben in den Kommentaren des nächsten Code-Chunks.
+- - -
+```{r "5__4"}
+#Berechnen Sie die Node Degrees aller Knoten des Graphen kite
+#und speichern Sie den Vektor in der Variable deg_kite
+
+#Berechnen Sie nun den Average Degree des Graphen kite
+
+```
+Im Durchschnitt ist somit jeder Knoten des Graphen *kite* mit 3.6 Knoten verbunden. Der folgende Code-Chunk berechnet dieselbe Kennzahl für das Netzwerk *karate*. Führen Sie den Code aus.
+```{r "5__5"}
+#Berechnen Sie den Average Degree des Graphen karate
+deg_karate <- degree(graph=karate)
+mean(x=deg_karate)
+```
+Wie Sie sehen, weichen die Graphen in dieser Kennzahl voneinander ab. Ist das alleine schon aussagekräftig?
+- - -
+*Aufgabe:* Lassen Sie sich dazu mit Hilfe der Befehle *vcount(graph)* und *ecount(graph)* die Anzahl der Knoten bzw. Kanten der beiden Graphen ausgeben.
+- - -
+```{r "5__6"}
+#Bezüglich Graph kite:
+#Speichern Sie die Anzahl Knoten in der Variable v_kite
+
+#Speichern Sie die Anzahl Kanten in der Variable e_kite
+
+#Bezüglich Graph karate:
+#Speichern Sie die Anzahl Knoten in der Variable v_karate
+
+#Speichern Sie die Anzahl Kanten in der Variable e_karate
+
+#Übersichtliche Ausgabe der Zahlen
+data.frame(kite =c(v_kite, e_kite), karate=c(v_karate, e_karate), row.names=c("Anzahl Knoten", "Anzahl Kanten"))
+```
+Da der Graph *karate* sowohl in der Anzahl der Knoten, als auch in der Anzahl der Kanten größer ist als der Graph *kite*, besteht dennoch die Möglichkeit, dass die Graphen sich ähneln - obwohl der Average Degree unterschiedlich ausfällt. Untersuchen wir daher ein weiteres Merkmal - die **Degree Distribution**. Der Befehl *hist(x)* gibt ein Histogramm der Daten in *x* aus. 
+- - -
+*Aufgabe:* Wenden Sie diesen Befehl im folgenden Code-Chunk auf die Node Degrees der einzelnen Knoten an, um dadurch die Degree Distribution zu erhalten.
+- - -
+```{r "5__7"}
+#Lassen Sie sich die Degree Distribution des Graphen kite anzeigen
+#Verwenden Sie dazu die oben definierte Variable deg_kite
+
+#Lassen Sie sich zum Vergleich die Degree Distribution
+#des Graphen karate anzeigen
+#Verwenden Sie dazu die oben definierte Variable deg_karate
+
+```
+Sie können erkennen, dass die beiden Graphen sich auch hinsichtlich der Degree Distribution $P(k)$ unterscheiden. Während die Node Degrees im Graph *kite* zwischen Node Degree=1 und Node Degree=6 eher gleichverteilt sind, ist die Degree Distribution des Graphen *karate* eher rechtsschief.
+
+Die Berechnungen - Average In-Degree, Average Out-Degree und die Degree Distribution - für gerichtete Graphen erfolgen analog, mit dem Unterschied, dass bei der Funktion *degree* das Argument *mode="in"* bzw. *mode="out"* verwendet wird. Da dies keinen grundlegenden Lernfortschritt mit sich bringt, verzichten wir an dieser Stelle auf eine beispielhafte Berechnung für gerichtete Graphen.
+
+### b) Gradbasierte Maße - Clustering Coefficient
+Neben dem Node Degree haben Sie noch ein weiteres gradbasiertes Maß im Skript kennengelernt: den **Clustering Coefficient** für ungerichtete Graphen.
+
+Im Package *'igraph'* gibt es den Befehl *transitivity*, welcher sowohl Local, als auch Average Clustering Coefficients für ungerichtete Graphen berechnen kann. Grundsätzlich sollte bei Clustering Coefficients stets darauf geachtet werden, wie sie berechnet werden. Um konsistent mit der Definition im Skript zu bleiben, werden wir daher lediglich den Local Clustering Coefficient $C_i$ mit dieser Formel berechnen:
+$$C_i=\frac{2|L_i|}{k_i(k_i-1)}$$
+Dabei steht $|L_i|$ für die Anzahl an Verbindungen zwischen den Nachbarknoten von Knoten i und $k_i$ für den Node Degree von Knoten i.  
+Den globalen Clustering Coefficient, bei uns **Average Clustering Coefficient** $\langle C \rangle$ genannt, erhält man anschließend durch Mittelung der Local Clustering Coefficients:
+$$\langle C \rangle = \frac{1}{|N|}\sum_{i=1}^{|N|}C_i$$
+Hierbei steht $|N|$ wie gewohnt für die Anzahl aller Knoten im Graphen.
+
+Im folgenden Code-Chunk wird die Funktion *transitivity(graph, type="local", vids, weights=NA)* verwendet, welche für bestimmte Knoten (angegeben als Vektor im Argument *vids*) des Graphen *karate* die Local Clustering Coefficients bestimmt (Kolaczyk und Csárdi, 2014, Kapitel 4.3.2). Das Argument *weights=NA* unterbindet, dass der Befehl automatisch die Werte des Attributs *weight* bei der Berechnung des Koeffizienten verwendet. Betrachten Sie den Code und führen Sie ihn aus.
+```{r "5__8"}
+#Berechnung von C_i für die Knoten "Mr Hi" und "John A" in karate
+transitivity(graph=karate, type="local", vids=c("Mr Hi", "John A"), weights=NA)
+```
+- - -
+*Aufgabe:* Berechnen Sie nun analog dazu zunächst alle Local Clustering Coefficients für den Graphen *kite* und im Anschluss daran den Average Clustering Coefficient für diesen Graphen. Das Argument *weights* benötigen Sie dazu nicht, da der Graph *kite* kein Kantenattribut namens *weight* besitzt. Wenn Sie das Argument *vids* nicht verwenden, so werden automatisch alle Knoten berücksichtigt.
+- - -
+```{r "5__9"}
+#Berechnen Sie C_i für alle Knoten in kite
+#und speichern Sie diese in C_local_kite
+
+#Berechnen Sie den Average Clustering Coefficient, 
+#indem Sie die Variable C_local_kite verwenden
+mean(x=C_local_kite)
+```
+
+Der Graph *kite* besitzt zwar keine isolierten Knoten, dafür aber einen Knoten mit nur einem Nachbar. Für den Fall, dass ein Knoten im betrachteten Graphen den Grad 0 (isolierter Knoten) oder 1 (ein Nachbarknoten) besitzt, ist die Formel für $C_i$ aus dem Skript für diesen Knoten nicht definiert. Auch mit dem Befehl *transitivity(..., type="local")* erhält man für einen solchen Knoten keinen Wert (*NaN*). Enstprechend ergibt sich für den Fall, dass der Graph mindestens einen solchen Knoten besitzt, auch kein Wert (*NaN*) für den Average Clustering Coefficient. Grundsätzlich erachten wir in solch einem Fall die Berechnung des Average Clustering Coefficients als nicht sinnvoll.
+
+### c) Pfadbasierte Maße
+Sie haben in *Aufgabe 4* bereits verschiedene Befehle zur Bestimmung der Entfernung und des kürzesten Pfades zwischen Knoten  kennengelernt. Nun sollen diese beiden Maße durch den **Network Diameter** $d_{max}$ und die **Average Path Length** $\langle d \rangle$ erweitert werden. Auch diese beiden Kennzahlen betrachten wir im Folgenden lediglich für ungerichtete Graphen.
+- - -
+*Aufgabe:* Betrachten Sie den Graphen *karate* und bestimmen Sie den Network Diameter des Graphen analog zu seiner Definition
+$$d_{max}=max_{n_i,n_j \in N}\{d(n_i,n_j)\}$$
+Folgen Sie dazu den Anweisungen in den Kommentaren des folgenden Code-Chunks. Falls Sie sich an manche Befehle nicht mehr erinnern können, empfiehlt es sich, in *Aufgabe 4* nachzuschlagen oder die Hint-Funktion zu verwenden.
+- - -
+```{r "5__10"}
+#Bestimmen Sie die Entfernungen zwischen allen Knoten
+#des Graphen karate und speichern Sie diese in der Variable dist_karate
+#Setzen Sie das Argument weigths=NA
+
+#Bestimmen Sie den Diameter, indem Sie das Maximum von dist_karate berechnen
+#Speichern Sie den Wert in der Variable dmax_karate
+
+#Lassen Sie dmax_karate ausgeben
+
+```
+
+Alternativ zu dieser manuellen Berechnung bietet das Package *'igraph'* den Befehl *diameter(graph, directed = FALSE, weights)*, welcher direkt den Network Diameter berechnet.
+- - -
+*Aufgabe:* Testen Sie im folgenden Code-Chunk, ob der Befehl (mit *weights=NA*) für den Graphen *karate* zu demselben Ergebnis führt wie die manuelle Berechnung.
+- - - 
+```{r "5__11"}
+#Bestimmen Sie den Network Diameter von karate mit dem Befehl diameter
+
+```
+
+Abschließend soll die durchschnittliche Entfernung der Knoten zueinander (**Average Path Length** $\langle d \rangle$) bestimmt werden. Auch hier ist der intuitive Ansatz die manuelle Berechnung. Die Formel zur Berechnung lautet wie folgt:
+$$\langle d \rangle = \frac{1}{|N|}\frac{1}{|N|-1}\sum_{i=1}^{|N|}\sum_{j=1,~j\neq i}^{|N|} d(n_i, n_j)$$
+Anschaulich beschreibt die Doppelsumme die Addition aller Elemente der Entfernungsmatrix ohne die Diagonalelemente. 
+- - -
+*Aufgabe:* Verwenden Sie diesen Ansatz und die Variable *dist_karate* (Entfernungen aller Knoten des Graphen *karate* zueinander), sowie die Variable *v_karate* (Anzahl Knoten im Graph *karate*), um für den Graphen *karate* die Average Path Length zu bestimmen.
+- - -
+*Hinweis: Die Diagonalelemente einer Matrix erhält man mit dem Befehl diag(matrix).*
+
+```{r "5__12"}
+#Bestimmen Sie die Average Path Length des Graphen karate
+#und speichern Sie diese in der Variable dmean_karate
+#Geben Sie die Variable dmean_karate aus
+```
+- - -
+*Aufgabe:* Kontrollieren Sie Ihr Ergebnis, indem Sie den Befehl *mean_distance(graph)* auf den Graphen *karate* anwenden. Hier wird mittels eines Breadth-First-Algorithmus direkt die Average Path Length bestimmt.
+- - -
+```{r "5__13"}
+#Bestimmen Sie die Average Path Length von karate direkt
+
+```
+
+
+*Anmerkungen:*  
+* *Dieses Problem Set wurde mit dem Package 'RTutor' von Prof. Dr. Sebastian Kranz von der Universität Ulm erstellt. Weitere Informationen zu diesem Package und den RTutor-Problem Sets finden Sie auf der GitHub-Seite* <https://github.com/skranz/RTutor>.  
+* *Informationen zu den einzelnen Befehlen sind - falls nicht anders angegeben - den jeweiligen R-Hilfeseiten entnommen. Dort finden Sie auch weitere Informationen zu den einzelnen Befehlen. Darüber hinaus wurden die Beschreibungen zum Package igraph (igraph (2015)) verwendet.* 
+* *Inspirationen zu den Aufgaben kamen außerdem unter anderem aus Kolaczyk und Csárdi (2014).* 
+* *Alle Quellenangaben finden Sie im Literaturverzeichnis (Exercise LV).*
+
+## Exercise LV -- Literaturverzeichnis
+### Packages:
+* Csardi G., Nepusz T. (2006): The igraph software package for complex network research. InterJournal, Complex Systems, S. 1695, URL: http://igraph.org. 
+* Csardi, Gabor (2015): igraphdata: A Collection of Network Data Sets for the 'igraph' Package. R package version 1.0.1, URL: https://CRAN.R-project.org/package=igraphdata. 
+* Kranz, Sebastian (2015): RTutor: R problem sets with automatic test of solution and hints. R package version 2015.12.16. 
+* R Core Team (2016): R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria, URL: https://www.R-project.org/. 
+
+### Packagebeschreibungen/Hilfeseiten:
+* igraph (2015): Package 'igraph', URL: https://cran.r-project.org/web/packages/igraph/igraph.pdf. 
+* igraphdata (2015): Package 'igraphdata', Csardi, Gabor, URL: https://cran.r-project.org/web/packages/igraphdata/igraphdata.pdf. 
+
+### Buch-, Paper- und Onlinequellen:
+* Krackhardt, David (1990): Assessing the Political Landscape: Structure, Cognition, and Power in Organizations. Administrative Science Quarterly 35 (2), S. 342-369.
+* Kolaczyk, Eric; Csárdi, Gábor (2014): Statistical Analysis of Network Data with R. New York: Springer Science+Business Media.
+* Nepusz, Tamás; Petróczi, Andrea; Negyessy, László; Bazsó, Fülöp (2008): Fuzzy communities and the concept of bridgeness in complex networks. Physical Review E 77, 016107.  
+* Source "Kite" (2017): http://www.orgnet.com/sna.html, zuletzt aufgerufen am 13.3.2017 
+* Zachary, Wayne W. (1977): An Information Flow Model for Conflict and Fission in Small Groups. Journal of Anthropological Research 33 (4), S. 452-473. 

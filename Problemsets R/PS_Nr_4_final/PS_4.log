@@ -1,0 +1,12 @@
+{"type":["init_ps"],"time":["2017-05-18 16:52:30"],"user":["Seb"],"umph":[1495119150.3476],"ok":[true]}
+,
+{"type":["check_chunk"],"time":["2017-05-18 16:52:36"],"user":["Seb"],"umph":[1495119156.8494],"ok":[true],"chunk":[1],"ex":[1],"e.ind":[0],"code":["#Laden des Packages 'igraphdata'\nlibrary(igraphdata)\n#Laden des igraph-Objektes karate\ndata(karate)\n#Plotten des Graphen karate\nplot(x=karate)"],"message":[""]}
+,
+{"type":["check_chunk"],"time":["2017-05-18 16:52:40"],"user":["Seb"],"umph":[1495119160.8416],"ok":[true],"chunk":[9],"ex":[2],"e.ind":[0],"code":["#Laden des Datensatzes \"InformationDiffExample.csv\"\ndata_diff <- read.csv2(\"InformationDiffExample.csv\", header=TRUE)\n#Laden des Datensatzes \"InformationDiffExample_nodes.csv\"\ndata_diff_nodes <- read.csv2(\"InformationDiffExample_nodes.csv\", header=TRUE)\n#Ausgabe der Datensätze\ndata_diff\ndata_diff_nodes"],"message":[""]}
+,
+{"type":["init_ps"],"time":["2018-04-11 22:47:52"],"user":["default_user"],"umph":[1523479672.5891],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-04-11 22:49:26"],"user":["default_user"],"umph":[1523479766.6845],"ok":[true]}
+,
+{"type":["init_ps"],"time":["2018-04-11 23:16:17"],"user":["default_user"],"umph":[1523481377.8773],"ok":[true]}
+,

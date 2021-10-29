@@ -1,0 +1,18 @@
+Anmerkungen zum Problem Set Nr. 6
+----------------------------------------------
+
+*Beschreibung des allg. Vorgehens bei einer Klassifikation: Quelle Zhai und Massung (2016) korrekt?
+
+*Teilaufgabe a):
+- Ziel der Klassifikation so korrekt? Wir wollen ja eigentlich nicht die Verfasser klassifizieren...
+  Mein Vorschlag: Das Ziel dieser Klassifikation soll sein, 
+  die Posts danach unterscheiden zu können, auf welche Art von Essen sie sich beziehen.
+  Konkret soll danach unterschieden werden, ob die deutsche oder die italienische Küche im Vordergrund steht.
+
+*Teilaufgabe a) und b):
+- Warum werden die Evalutionsmetriken immer nur für eine Klasse angegeben? Vielleicht kann man das hier auch für beide
+Klassen machen?
+
+*Teilaufgabe b):
+- Was genau ist das Ziel der CrossValidation? Das würde ich noch genauer beschreiben und evtl. auch die Interpretation der
+Ergebnisse hier ausführlicher machen - im Sinne von: Was bringt uns diese zusätzliche Methode hier.

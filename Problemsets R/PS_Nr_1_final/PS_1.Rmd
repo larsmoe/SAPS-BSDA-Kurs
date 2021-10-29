@@ -1,0 +1,601 @@
+# Social Media Analytics - Problem Set Nr. 1
+
+
+```{r 'check_ps', include=FALSE}
+
+user.name = '' # set to your user name
+
+# To check your problem set, save your file (Ctrl-S) and then run the RStudio Addin 'Check Problemset'
+
+# Alternatively run the following lines 
+library(RTutor)
+ps.dir = getwd() # directory of this file
+ps.file = 'PS_1.Rmd' # name of this file
+check.problem.set('PS_1', ps.dir, ps.file, user.name=user.name, reset=FALSE)
+```
+
+
+*Stand:    26.03.2018*
+
+
+## Exercise 1 -- Herzlich willkommen!
+
+Willkommen zum ersten RTutor-Problem Set in diesem Modul! Sie finden hier vier Aufgaben (*Exercises*) zu Inhalten aus Kapitel 3 *Social Network Analysis* - konkret zu 3.1. Die Reihenfolge der Aufgaben entspricht dabei im Wesentlichen der Reihenfolge der Inhalte im Skript. Aus diesem Grund, aber auch da die die Inhalte zu R im Laufe des Problem Sets aufeinander aufbauen, empfiehlt es sich, die Reihenfolge der Aufgaben einzuhalten.
+
+### Voraussetzungen bezüglich R
+
+Im Rahmen dieser Übungsaufgaben wird ein gewisses Grundverständnis in R vorausgesetzt. Falls Sie die Grundlagen in R beherrschen, können Sie direkt loslegen! Sollten Sie noch nicht mit R vertraut sein, so ist es empfehlenswert, dass Sie diese Lücken aufarbeiten. Um die Sprache von Grund auf zu erlernen, bietet sich beispielsweise das **Tutorial** ***swirl*** sehr gut an. Hinter *swirl* verbirgt sich ein R-Package, welches sowohl grundlegende als auch weiterführende Kenntnisse in R vermittelt.  
+Um das Tutorial durchführen zu können, befolgen Sie einfach die folgenden zwei Schritte:  
+* Installieren Sie mit dem Befehl *install.packages("swirl")* das Package  
+* Laden Sie das Package mit dem Befehl *library(swirl)*
+
+Nun startet der Kurs automatisch und Sie werden durch Kommentare in der Konsole angeleitet. Bitte wählen Sie (nach einigen einleitenden Worten) die Option *"1: R Programming"*. Wir empfehlen Ihnen, dass Sie anschließend die *Kapitel 1-9* durcharbeiten. Zu den Inhalten von Kapitel 9 benötigen Sie im Rahmen dieses Problem Sets nur absolute Basics, sodass Sie das Kapitel unter Umständen nicht komplett bearbeiten müssen.  
+Falls Sie lieber ein alternatives Tutorial zu den Grundlagen in R bearbeiten möchten, so steht Ihnen diese Möglichkeit selbstverständlich auch frei.
+
+Nun steht Ihrer Arbeit mit dem Problem Set nichts mehr im Wege. Viel Spaß!
+
+*Tipp: Wenn Sie sich bei Aufgaben unsicher sind, zögern Sie nicht, den Hint-Button zu verwenden. Wenn Sie bei einzelnen konkreten Befehlen unsicher sind, ist in der Regel die R-Hilfe am sinnvollsten. Sie ist im rechten unteren Feld der RStudio-Oberfläche zu finden. Alternativ können Sie zu jedem Befehl auch weitere Informationen erhalten, indem Sie in der Konsole den Befehl mit einem vorangestellten Fragezeichen eingeben. Falls Sie nicht Informationen zu einem konkreten Befehl suchen, sondern zunächst einmal den Befehl selbst, so ist tatsächlich Google die zuverlässigste Hilfe.*
+
+### Ein erster Einblick
+R bietet eine Vielzahl an Packages zum Umgang mit Netzwerken. Im Rahmen dieses Problem Sets wollen wir das Package *'igraph'* verwenden. Sie werden sehen, wie viele Möglichkeiten Ihnen damit in Bezug auf die Visualisierung und Analyse von (sozialen) Netzwerken zur Verfügung stehen. Die folgenden Code-Blöcke (im Folgenden als *Code-Chunks* bezeichnet) sollen Ihnen einen kleinen Vorgeschmack darauf geben.
+
+Im nächsten Code-Chunk wird das Package *'igraph'* geladen. Führen Sie den Code aus.  
+*Anmerkung: Wenn Sie dazu aufgefordert werden, "den Code auszuführen", so ist gemeint, dass Sie (im durch den Edit-Button aktivierten Code-Chunk) den Check-Button drücken.*
+
+```{r "1"}
+#Lade das Package igraph
+library(igraph)
+```
+Ognyanova (2016a) stellt in ihrem Workshop R-Code zur Verfügung, welcher mit Hilfe dieses Packages verschiedene Arten von Graphen plottet. Sie finden Auszüge aus dem Code im folgenden Code-Chunk - die (teilweise angepassten) Kommentare geben den Typ des Graphen an. Führen Sie die Code-Chunks aus und lassen Sie sich von den ausgegebenen Grafiken inspirieren. 
+*Anmerkung: Die Details des Codes sind an dieser Stelle vernachlässigbar.*
+```{r "1__2"}
+#Vollständiger Graph mit 40 Knoten
+fg <- make_full_graph(40)
+plot(fg, vertex.size=10, vertex.label=NA)
+
+#Baum mit 40 Knoten
+tr <- make_tree(40, children = 3, mode = "undirected")
+plot(tr, vertex.size=10, vertex.label=NA)
+
+# Erdos-Renyi Zufallsgraph 
+er <- sample_gnm(n=100, m=40) 
+plot(er, vertex.size=6, vertex.label=NA)  
+
+# Watts-Strogatz Small-World-Graph
+sw <- sample_smallworld(dim=2, size=10, nei=1, p=0.1)
+plot(sw, vertex.size=6, vertex.label=NA, layout=layout_in_circle)
+ 
+# Barabasi-Alberts Modell für skalenfreie Graphen
+ ba <-  sample_pa(n=100, power=1, m=1,  directed=F)
+ plot(ba, vertex.size=6, vertex.label=NA)
+
+```
+
+
+
+### Aufbau dieses Problem Sets
+Im Verlauf dieses Moduls werden Sie mehrere Problem Sets erhalten. Dieses erste Problem Set widmet sich den Möglichkeiten, R auf den Inhalt des Kapitels 3.1 des Skripts anzuwenden. Es orientiert sich am Skript und ist konkret wie folgt gegliedert:
+
+* *Aufgabe 2* -- Modellierung und graphische Darstellung von Netzwerken 
+* *Aufgabe 3* -- Weitere Arten von Netzwerken 
+* *Aufgabe 4* -- Pfade und Entfernungen in Netzwerken 
+
+Zu den restlichen Inhalten aus Kapitel 3 werden Sie in späteren Problem Sets weitere Aufgaben erhalten:
+
+* *Aufgabe 5* -- Kennzahlen zur Beschreibung von Netzwerken 
+* *Aufgabe 6* -- Zentralität in Netzwerken 
+* *Aufgabe 7* -- Communities in Netzwerken
+* *Aufgabe 8* -- Information Diffusion in Netzwerken
+
+Bezüglich des Codes ist jede der Aufgaben (*Exercises*) unabhängig von den anderen Aufgaben. Das heißt, Sie müssen das Problem Set nicht an einem Stück bearbeiten, sondern können die Aufgaben zeitlich versetzt lösen. Wie bereits erläutert empfiehlt es sich dennoch, die Reihenfolge bei der Bearbeitung einzuhalten. Beachten Sie bitte, dass Sie innerhalb einer Aufgabe die enthaltenen *Code-Chunks* in der vorgegebenen Reihenfolge bearbeiten müssen.
+
+*Anmerkungen:*  
+* *Dieses Problem Set wurde mit dem Package 'RTutor' von Prof. Dr. Sebastian Kranz von der Universität Ulm erstellt. Weitere Informationen zu diesem Package und den RTutor-Problem Sets finden Sie auf der GitHub-Seite* <https://github.com/skranz/RTutor>.  
+* *Informationen zu den einzelnen Befehlen sind - falls nicht anders angegeben - den jeweiligen R-Hilfeseiten entnommen. Dort finden Sie auch weitere Informationen zu den einzelnen Befehlen. Darüber hinaus wurden die Beschreibungen zum Package igraph (igraph (2015)) verwendet.* 
+* *Inspirationen zu den Aufgaben kamen außerdem unter anderem aus Luke (2015) und Kolaczyk und Csárdi (2014).* 
+* *Alle Quellenangaben finden Sie im Literaturverzeichnis (Exercise LV).*
+
+
+## Exercise 2 -- Modellierung und graphische Darstellung von Netzwerken
+Im letzten Kapitel haben Sie einige verschiedene Graphen mit dem Package *'igraph'* erzeugt und visualisiert - und damit einen ersten Eindruck erhalten, wozu das Package *'igraph'* in der Lage ist. In diesem Kapitel erlernen Sie nun die grundlegenden Befehle, um selbst Graphen zu erzeugen und zu zeichnen. Diese Aufgabe ist angelehnt an den Workshop von Ognyanova (2016a) (<http://www.kateto.net/netscix2016>).
+
+*Anmerkung: Im Package 'igraph' werden Objekte, die Netzwerke repräsentieren, als "Graphen" bezeichnet.*
+
+### a) Graphen manuell erzeugen
+Eine Darstellungsmöglichkeit von Netzwerken sind **Graphen**. In der Theorie wird ein Graph $G$ durch die Menge der Knoten $N$ und die Menge der Kanten $L$ definiert:  
+$$G:= (N,L)$$
+$$N:=\{n_1, ..., n_{|N|}\}$$
+
+$$L:=\{ l_1, l_2, ..., l_{|L|} \}$$
+Gerichtete Kanten werden dabei als Tupel $l_k=(n_i,n_j)$, ungerichtete Kanten als Mengen $l_k=\{n_i,n_j\}$ notiert.
+
+Wenn das Netzwerk eine überschaubare Größe besitzt, so kann man einen Graphen in R von Hand definieren. Dazu verwendet man den Befehl *make_graph(edges, n)*. Analog zur Theorie müssen dabei als Argumente die Menge der Kanten, genannt *edges*, sowie die Anzahl der Knoten *n* angegeben werden. Per default wird so ein gerichteter Graph erzeugt.  
+Bitte beachten Sie, dass das Argument *n* nicht notwendig ist, falls jeder Knoten an mindestens einer Kante beteiligt ist. 
+*Um Komplikationen zu vermeiden, wird im Rahmen dieses Problem Sets der Befehl make_graph immer mit dem Argument n verwendet. Die einzige Ausnahme (benannte Knoten) werden Sie weiter unten in dieser Teilaufgabe kennenlernen.*
+
+Der folgende Code-Chunk zeigt beispielhaft die Erstellung eines **gerichteten Graphen** mit vier Knoten, bei dem eine Verbindung von Knoten 1 zu Knoten 2, von Knoten 2 zu Knoten 3 und von Knoten 3 zu Knoten 1 besteht. Der Befehl *plot(x)* (oder auch *plot.igraph(x)*) zeichnet den Graphen *x*. Betrachten Sie den Code und führen Sie ihn aus.
+```{r "2",fig.height=6}
+#Erstellung eines Graphen mit 4 Knoten, von denen die Knoten 1, 2 und 3
+#miteinander verbunden sind
+graph_example <- make_graph(edges = c(1,2, 2,3, 3,1), n=4)
+#Plotten des Graphen graph_example
+plot(x = graph_example)
+```
+Wie Sie sehen, wird die Menge der Kanten im Befehl *make_graph* durch einen Vektor dargestellt, bei dem die Anfangs- und Endknoten der einzelnen Kanten durch Kommata getrennt nacheinander aufgelistet werden.  
+- - -
+*Aufgabe:* Im Folgenden ist es nun Ihre Aufgabe, einen solchen gerichteten Graphen zu erstellen. Der Graph soll fünf Knoten enthalten, wobei jeweils eine Verbindung vom Knoten 1 zu den Knoten 2, 3 und 4, sowie eine Verbindung von Knoten 3 zu Knoten 5 besteht. Zeichnen Sie im Anschluss daran den Graphen und führen Sie den Code aus. Bitte beachten Sie, dass Sie die Kanten genau in der Reihenfolge wie beschrieben angeben müssen, damit RTutor Ihre Lösung als korrekt erkennt. Falls Sie Hilfe benötigen, können Sie den *Hint-Button* verwenden.  
+- - -
+```{r "2__2",fig.height=6}
+#Erstellen Sie einen Graph wie oben beschrieben und speichern Sie ihn in
+#der Variable graph_d1
+
+#Plotten Sie nun den Graphen graph_d1
+
+```
+Um einen **ungerichteten Graphen** zu erzeugen, muss das zusätzliche Argument *directed* auf *FALSE* gesetzt werden.  
+- - -
+*Aufgabe:* Erstellen Sie im folgenden Code-Chunk denjenigen Graphen, welcher entsteht, wenn Sie jede gerichtete Kante des obigen Graphen durch eine ungerichtete Kante ersetzen. Speichern Sie den Graphen in der Variable *graph_ud1* und zeichnen Sie diesen ungerichteten Graphen anschließend.
+- - -
+```{r "2__3",fig.height=6}
+#Erstellen Sie den in der Aufgabenstellung beschriebenen ungerichteten Graphen
+#und speichern Sie ihn anschließend in der Variable graph_ud1
+
+#Plotten Sie den Graphen graph_ud1
+
+```
+Die Darstellung der Kanten im Character-Vektor ist teilweise nicht sehr übersichtlich. Falls nur wenige Kanten existieren, mag es daher sinnvoll sein, den Befehl *graph_from_literal* zu verwenden. Hier werden die Kanten folgendermaßen dargestellt: Ein Bindestrich (-) steht für eine ungerichtete Kante, ein Bindestrich zusammen mit einem Plus (-+) steht für eine gerichtete Kante, wobei der Pfeil in die Richtung zeigt, auf der das Plus steht. Der folgende Code-Chunk zeigt ein Beispiel für diese Art, einen Graph zu erstellen. Betrachten Sie den Code und führen Sie ihn anschließend aus.
+```{r "2__4",fig.height=6}
+#Erstelle einen Graphen mit symbolischer Notation
+graph_s1 <- graph_from_literal(1-+2, 2-+3, 3-+1)
+#Plotte den Graphen graph_s1
+plot(x = graph_s1)
+```
+
+
+Wenn Sie möchten, dass die Knoten des Graphen nicht nur Nummern, sondern **Namen** erhalten, so können Sie dies folgendermaßen erreichen: Bei der Anwendung des Befehls *make_graph* verwenden Sie im Argument *edges*, welches die Kanten des Graphen beschreibt, nicht Zahlen, sondern stattdessen die Namen der Knoten in Anführungszeichen.  
+Betrachten wir nun die drei Jungs *Mike*, *Michael* und *Max*: Mike ist mit Max und mit Michael befreundet. Zwischen Michael und Max besteht keine direkte Beziehung.  
+- - -
+*Aufgabe:* Zeichnen Sie einen ungerichteten Graphen, der die Freundschaftsbeziehungen zwischen Mike, Michael und Max beschreibt. Beachten Sie dabei, dass das Argument *n*, welches die Anzahl der Knoten angibt, bei Graphen mit benannten Knoten nicht benötigt wird und vergessen Sie nicht die Anführungszeichen für die Namen. Speichern Sie den Graphen in der Variable *graph_n1* und zeichnen Sie ihn.  
+- - -
+*Anmerkung: Sie werden sehen, dass der entstandene Plot nicht sehr schön gestaltet ist. Welche Möglichkeiten der plot-Befehl bietet, um Plots schöner zu gestalten, lernen Sie in Abschnitt d) dieser Aufgabe.*
+```{r "2__5",fig.height=6}
+#Erstellen Sie den oben beschriebenen Graphen und speichern Sie ihn
+#in der Variable graph_n1
+
+#Zeichnen Sie den Graphen
+
+```
+Im obigen Beispiel sind alle drei Knoten mit mindestens einem anderen Knoten verbunden - das heißt, alle Knoten tauchen in dem Argument *edges* auf. Ist dies nicht der Fall, müssen die sogenannten **"isolierten" Knoten**, welche keine Verbindung zu anderen Knoten besitzen, separat angegeben werden. Das entsprechende Argument heißt daher *isolates* und wird als Character-Vektor angegeben.  
+Betrachten wir nun einen erweiterten "Freundeskreis": Zusätzlich zu *Mike*, *Michael* und *Max* sind in diesem noch *Manuel* und *Lisa* vertreten. Die beiden sind weder miteinander, noch mit *Mike*, *Michael* und *Max* befreundet. Im folgenden Code-Chunk wird ein ungerichteter Graph erstellt, der die Freundschaftsbeziehungen zwischen den fünf Leuten darstellt. Betrachten Sie den Code und führen Sie ihn aus.
+```{r "2__6",fig.height=6}
+#Erstellen des oben beschriebenen Graphen und Speichern in 
+#der Variable graph_n2
+graph_n2 <- make_graph(edges=c("Mike", "Max", "Mike", "Michael"), 
+                      directed=FALSE, isolates = c("Manuel", "Lisa"))
+#Plotten des Graphen graph_n2
+plot(x = graph_n2)
+```
+Bisher haben wir lediglich Graphen erzeugt. Wir können jedoch auch die eben definierten **Eigenschaften der Graphen** wieder auslesen. Der Befehl *V(graph)* gibt die Knoten des Graphen *graph* aus - *V* steht dabei als Abkürzung für "vertices". *E(graph)* gibt an, welche Knoten des Graphen wie miteinander verbunden sind - *E* steht dabei als Abkürzung für "edges".  
+- - -
+*Aufgabe:* Lassen Sie sich im Folgenden die Knoten und Kanten des gerichteten Graphen *graph_d1* ausgeben.
+- - -
+```{r "2__7"}
+#Lassen Sie sich die Knoten von graph_d1 ausgeben
+
+#Lassen Sie sich die Kanten von graph_d1 ausgeben
+
+```
+Beim eben betrachteten Graphen *graph_d1* handelt es sich um einen gerichteten Graphen. Entsprechend sind die Kanten mit Pfeilen symbolisiert. 
+- - -
+*Aufgabe:* Lassen Sie sich im Folgenden die Knoten und Kanten des ungerichteten Graphen *graph_n2* mit benannten Knoten ausgeben und beobachten Sie, welches Symbol hier für die Kanten verwendet wird.
+- - -
+```{r "2__8"}
+#Lassen Sie sich die Knoten von graph_n2 ausgeben
+
+#Lassen Sie sich die Kanten von graph_n2 ausgeben
+
+```
+
+
+
+### b) Graphen und ihre Adjazenzmatrix
+Ein Netzwerk lässt sich nicht nur als Graph beschreiben, sondern auch mit Hilfe einer **Adjazenzmatrix**. 
+Im Package *'igraph'* lassen sich diese beiden Notationsarten von Netzwerken miteinander verbinden: Zu jedem Graph lässt sich die zugehörige Adjazenzmatrix ausgeben und aus einer Adjazenzmatrix lässt sich ein Graph erstellen. Dabei muss lediglich der Name des Graphen, gefolgt von eckigen Klammern, angegeben werden. Der folgende Code-Chunk gibt die Adjazenzmatrix des gerichteten Graphen *graph_d1* aus Teilaufgabe *a)* aus. Führen Sie den Code aus.
+```{r "2__9"}
+#Adjazenzmatrix von graph_d1 ausgeben lassen
+graph_d1[]
+```
+Wie Sie sehen, werden bestehende Kanten - seien sie gerichtet oder ungerichtet - mit einer *1* markiert. An allen Stellen, an denen keine Verbindung existiert, wird in der Adjazenzmatrix ein *Punkt* notiert. Der Wert für diese Elemente beträgt *0*.  
+Der Graph *graph_ud1* ergibt sich aus dem Graphen *graph_d1*, wenn jede *gerichtete* Kante von *graph_d1* durch eine *ungerichtete* Kante ersetzt wird. Entsprechend wird erwartet, dass der ungerichtete Graph *graph_ud1* eine symmetrische Adjazenzmatrix besitzt, die in der oberen Hälfte mit der Adjazenzmatrix des Graphen *graph_d1* übereinstimmt.
+- - -
+*Aufgabe:*  Überprüfen Sie die obige Erwartung, indem Sie sich die Adjazenzmatrix von *graph_ud1* anzeigen lassen.
+- - -
+```{r "2__10"}
+#Lassen Sie sich die Adjazenzmatrix von graph_ud1 anzeigen
+
+```
+Im Package *'igraph'* ist es zudem auch möglich, auf Basis einer Adjazenzmatrix einen Graphen zu erstellen. Das wichtigste Element dabei ist die Adjazenzmatrix selbst.  
+Der folgende Code-Chunk erstellt eine solche **Matrix** mit dem Befehl *matrix(data, nrow, ncol, dimnames)*. Hierbei werden im Argument *data* alle Zellen der Matrix in einem Vektor angegeben. Die Argumente *nrow* und *ncol* geben die Anzahl der Zeilen bzw. Spalten der Matrix an. Schließlich können über das Argument *dimnames* in einer Liste zuerst die Zeilen- und dann die Spaltennamen (jeweils als Character-Vektor) übergeben werden. Beachten Sie, dass per default die Matrix spaltenweise mit den angegebenen Daten befüllt wird. Betrachten Sie den folgenden Code und führen Sie ihn aus.
+```{r "2__11"}
+#Matrix erstellen
+mat1 <- matrix(data=c(0,1,1,1,1,0,0,0,1,0,0,1,1,0,1,0), nrow=4, ncol=4,
+               dimnames = list(c("Anna", "Julia", "Mia", "Jenny"),
+                               c("Anna", "Julia", "Mia", "Jenny")))
+#Matrix ausgeben lassen
+mat1
+```
+Im Package *'igraph'* ist es nun möglich, einen **Graphen auf Basis einer Adjazenzmatrix** zu erstellen. Dazu wird der Befehl *graph_from_adjacency_matrix(adjmatrix, mode)* verwendet. Im Argument *adjmatrix* wird ebendiese Matrix übergeben, wobei im Argument *mode* festgelegt wird, ob der Graph gerichtet (*"directed"*) oder ungerichtet (*"undirected"*) sein soll. 
+- - -
+*Aufgabe:* Verwenden Sie den eben beschriebenen Befehl, um einen ungerichteten Graphen aus der obigen Adjazenzmatrix *mat1* zu erstellen. Speichern Sie den Graphen in der Variable *graph_mat1* und plotten Sie ihn anschließend.
+- - -
+```{r "2__12",fig.height=8}
+#Erzeugen Sie einen ungerichteten Graph aus der Adjazenzmatrix mat1 und
+#speichern Sie ihn in der Variable graph_mat1
+
+#Plotten Sie den Graph graph_mat1
+
+```
+
+### c) Graphen aus Daten erzeugen
+Selbstverständlich treten im realen Leben nicht nur Netzwerke auf, die sich manuell als Graphen definieren lassen. Gerade im Bereich Social Media Analytics hat man es häufig mit sehr großen Netzwerken zu tun. In solchen Fällen beschreiben meist riesige Datensätze die betrachteten Netzwerke. Auch mit dem Package *'igraph'* kann man **aus Data Frames Graphen erstellen**.
+
+Die Datensätze *"dataset1_nodes.csv"* und *"dataset1_edges.csv"* beschreiben die Knoten und Kanten eines Netzwerks verschiedener Medien, die durch Hyperlinks oder Erwähnungen teilweise miteinander in Verbindung stehen. *Sowohl die (ursprünglichen) Datensätze als auch der Code für deren Aufbereitung zu denjenigen Datensätzen, die Sie hier zur Bearbeitung vorfinden, sind dem Workshop von Ognyanova (2016a) entnommen.*  
+Der folgende Code-Chunk liest beide csv-Dateien mit dem Befehl *read.csv(file)* ein und speichert sie in den entsprechenden Variablen ab. Führen Sie den Code aus.
+
+*Anmerkung: Zum Einlesen von csv-Dateien gibt es in R zwei Befehle: read.csv(...) und read.csv2(...). Ersterer ist für das Einlesen von csv-Dateien aus dem englischsprachigen Excel, zweiterer für das Einlesen von csv-Dateien aus dem deutschsprachigen Excel geeignet. Sie unterscheiden sich darin, welches Symbol (Komma oder Semikolon) in der jeweiligen csv-Datei/im jeweiligen Excel als Trennzeichen zwischen Spalten bzw. als Dezimaltrennzeichen verwendet wird.*
+```{r "2__13"}
+#Einlesen der beiden Datensätze und Speichern in den Variablen vertices und edges
+vertices <- read.csv(file = "dataset1_nodes.csv")
+edges <- read.csv(file = "dataset1_edges.csv")
+```
+Der Befehl *head(x, n)* gibt die ersten *n* Zeilen von *x* aus. Per default zeigt der Befehl *head(x)* sechs Zeilen an.
+- - -
+*Aufgabe:* Betrachten Sie jeweils die ersten sechs Zeilen der Data Frames *vertices* und *edges* mit Hilfe des eben beschriebenen Befehls. Verwenden Sie dabei den möglichst einfachsten Befehl.
+- - -
+```{r "2__14"}
+#Lassen Sie die ersten sechs Zeilen von vertices ausgeben
+
+#Lassen Sie die ersten sechs Zeilen von edges ausgeben
+
+```
+Aus den Datenausschnitten wird deutlich, dass in den Datensätzen weitere Informationen - sowohl zu den Knoten als auch zu den Kanten - enthalten sind. In *'igraph'* werden diese Eigenschaften als sogenannte **Attribute** aufgenommen. Jedes Attribut ist addressierbar, indem man den Befehl *V(graph)$attributname* im Falle einer Knoteneigenschaft, *E(graph)$attributname* im Falle einer Kanteneigenschaft und *G(graph)$attributname* im Falle einer Grapheneigenschaft eingibt. Dabei ist der Attributname (*attributname*) hier durch die Spaltenüberschrift des jeweiligen Data Frames gegeben. Näheres dazu erfahren Sie in *Aufgabe 3*.
+Zunächst wollen wir jedoch das beschriebene Netzwerk grafisch darstellen. Dazu verwenden wir den Befehl *graph_from_data_frame(d, directed, vertices)*. Als Argumente braucht man hier:  
+* den Data Frame *d*: Er muss in den ersten beiden Spalten die Kanten und in den restlichen Spalten weitere Attribute enthalten  
+* *directed* (=TRUE oder =FALSE): die Angabe, ob der Graph gerichtet oder ungerichtet sein soll  
+* den Data Frame *vertices*: Er muss in der ersten Spalte die Knoten und in den restlichen Spalten weitere Attribute enthalten  
+
+Die Data Frames *edges* und *vertices* erfüllen die beschriebenen Bedingungen für die ersten beiden Argumente der Funktion *graph_from_data_frame*. 
+- - -
+*Aufgabe:* Nutzen Sie die obigen Angaben, um aus den Datensätzen *edges* und *vertices* einen gerichteten Graphen zu erstellen. Speichern Sie diesen in der Variable *graph_data1* und plotten Sie ihn anschließend.
+- - -
+```{r "2__15",fig.height=10}
+#Erzeugen Sie einen gerichteten Graph aus den Datensätzen edges und vertices
+#und speichern Sie ihn in der Variable graph_data1
+
+#Plotten Sie den Graphen graph_data1
+
+```
+
+
+### d) Visualisierung von Graphen
+Wie Sie im Laufe dieser Aufgabe bereits erfahren und getestet haben, können Netzwerke in *'igraph'* mit dem Befehl *plot*, welcher eine Kurzform von *plot.igraph* darstellt, visualisiert werden. Auch andere Packages wie bspw. das Package *'ggraph'* können zu diesem Zweck verwendet werden. Im Rahmen dieses Problem Sets wird lediglich das Package *'igraph'* zur Visualisierung verwendet.
+
+In *'igraph'* gibt es die Möglichkeit, mit Hilfe des Befehls *tkplot* den Plot *interaktiv* zu gestalten oder alternativ den Befehl *rglplot* zu verwenden. Näheres dazu erfahren Sie auf den entsprechenden R-Hilfeseiten.  
+Wir beschränken uns in diesem Problem Set auf den Befehl *plot.igraph*, der sehr viele Gestaltungsmöglichkeiten bietet. Der folgende Code-Chunk gibt Ihnen ein Beispiel dafür. Führen Sie den Code aus, welcher den eben betrachteten Graphen *graph_data1* in etwas anderer Form darstellt.
+```{r "2__16",fig.height=14, fig.width=14}
+#Hilfsvariablen zur Definition der Farben
+cols_edges <- c("red", "blue")
+cols_vertices <- c("white", "yellow", "orange")
+#Fortgeschrittenes Plotten des Graphen graph_data1
+plot(graph_data1, edge.label = E(graph_data1)$type, 
+     edge.color = cols_edges[(E(graph_data1)$type=="mention") +1],
+     vertex.color = cols_vertices[V(graph_data1)$media.type],
+     edge.arrow.size = 1)
+#Erstellung der Legende zum Plot
+legend(x="bottomright", legend = c("Newspaper", "TV", "Online"), 
+       fill=c("white", "yellow", "orange"))
+```
+Falls Sie daran interessiert sind, wie man einen solchen Plot erstellen kann, empfehlen wir Ihnen die ersten vier Kapitel des Tutorials von Ognyanova (2016b), welches Sie unter folgendem Link finden: <http://kateto.net/network-visualization>. Sie werden sehen, dass der obige Plot in Anlehnung an eines ihrer Beispiele erstellt wurde. Abgesehen von diesem Tutorial empfiehlt es sich für ein fortgeschrittenes Plotten die R-Hilfeseiten *plot.igraph*, *igraph.plotting* und *legend* zu lesen.
+
+Von den vielen Zusatzargumenten, die dem *plot*-Befehl übergeben werden können, wird Ihnen in diesem Problem Set die folgende Auswahl begegnen:  
+* *vertex.size* gibt die Größe der Knoten an - als Zahl (um alle Knoten gleich groß darzustellen) oder alternativ als Vektor  
+* *vertex.label* gibt die Beschriftung der Knoten an - per default werden hier die Indizes der Knoten verwendet  
+* *vertex.label.dist* gibt den Abstand der Knotenbeschriftung von den Knoten an  
+* *vertex.label.cex* gibt die Schriftgröße der Knotenbeschriftung an  
+* *edge.label* gibt die Beschriftung der Kanten an  
+* *edge.arrow.size* gibt die Größe der Pfeile gerichteter Kanten an
+
+
+## Exercise 3 -- Weitere Arten von Netzwerken
+### a) Knoten- und Kantenattribute - Gewichtete Netzwerke in R
+
+In *Aufgabe 2* wurde bereits angesprochen, dass Graphen in R auch **Knoten- und Kantenattribute** (und Graphenattribute - hier nicht weiter betrachtet) besitzen können. In dieser Teilaufgabe sollen Sie nun erfahren, worum es sich dabei handelt und wozu man diese benutzen kann. Sie werden bemerken, dass sich dadurch auch eine weitere Art von Netzwerken darstellen lässt: Gewichtete Netzwerke.  
+*Diese Teilaufgabe ist ebenfalls angelehnt an Ognyanova (2016a).*
+
+Im folgenden Code-Chunk werden erneut die Daten der *Aufgabe 2* (von Ognyanova (2016a)) mit dem Befehl *read.csv(file)* eingelesen und in den Variablen *edges* und *vertices* abgespeichert. Führen Sie den Code aus.
+```{r "3"}
+#Einlesen der beiden Datensätze und Speichern in den Variablen vertices und edges
+vertices<-read.csv(file = "dataset1_nodes.csv")
+edges<-read.csv(file = "dataset1_edges.csv")
+```
+Erzeugen Sie erneut aus diesen Datensätzen den gerichteten Graphen *graph_data1*, indem Sie den folgenden Code ausführen.
+```{r "3__2"}
+#Erzeugen eines gerichteten Graphen aus den Datensätzen 
+#edges und vertices und Speichern in graph_data1
+graph_data1 <- graph_from_data_frame(d=edges, directed = TRUE, 
+                                    vertices=vertices)
+```
+Mit dem Befehl *edge_attr_names(graph)* können Sie sich anzeigen lassen, welche Kantenattribute der Graph *graph* besitzt. Der Befehl *vertex_attr_names(graph)* funktioniert analog für Knoten. 
+- - -
+*Aufgabe:* Wenden Sie die beiden eben beschriebenen Befehle im folgenden Code-Chunk auf den Graphen *graph_data1* an.
+- - -
+```{r "3__3"}
+#Lassen Sie sich die Namen der Kantenattribute von graph_data1 anzeigen
+
+#Lassen Sie sich die Namen der Knotenattribute von graph_data1 anzeigen
+
+```
+In *Aufgabe 2 c)* haben Sie gelernt, dass sich die Knotenattribute mit dem Befehl *V(graph)$attributname* addressieren lassen. 
+- - -
+*Aufgabe:* Nutzen Sie diesen Befehl nun, um sich die Werte des zweiten Knotenattributs von *graph_data1* ausgeben zu lassen.
+- - -
+```{r "3__4"}
+#Lassen Sie sich die Werte des zweiten Knotenattributs
+#von graph_data1 ausgeben
+
+```
+
+Ein Vergleich mit den Data Frames *vertices* und *edges* zeigt, dass die Knoten- und Kantenattribute bereits in diesen Data Frames definiert wurden und automatisch vom Befehl *graph_from_data_frame* als solche interpretiert und abgespeichert wurden. Führen Sie den folgenden Code aus, um sich die jeweils ersten sechs Zeilen der beiden Data Frames erneut anzeigen zu lassen.
+```{r "3__5"}
+#Ausgabe der ersten sechs Zeilen beider Data Frames
+head(x = vertices)
+head(x = edges)
+```
+Wie Sie sehen, ist eines der Kantenattribute ein Kantengewicht (*weight*). Die Attribute eines Graphen können daher dazu genutzt werden, sogenannte **gewichtete Graphen** zu erzeugen. Wird dieses Attribut mit *weight* bezeichnet, so erkennen gewisse Funktionen aus dem *'igraph'*-Package automatisch, dass der Graph gewichtete Kanten besitzt, und beziehen die Attributwerte entsprechend in die "Berechnungen" ein.  
+- - -
+*Aufgabe:* Im folgenden Code-Chunk sollen in der Visualisierung des Graphen die Kanten mit ihrem jeweiligen Gewicht beschriftet werden. Dazu wird im *plot*-Befehl das zusätzliche Argument *edge.label* zur Kantenbeschriftung verwendet. Hier ist *graph* der aktuell betrachtete Graph *graph_data1* und *label* das Kantenattribut *weight*, welches - wie in *Aufgabe 2 c)* beschrieben - mit dem Befehl *E(graph)$attributname* adressiert wird.
+- - -
+```{r "3__6",fig.height=10, fig.width=10}
+#Plotten Sie mit dem Befehl plot und den oben beschriebenen Argumenten
+#den Graphen graph_data1 mit Kantengewichten
+
+```
+
+Im gerade betrachteten Fall wurden die Kanten- und Knotenattribute bereits bei der Erzeugung des Graphen mitdefiniert, da sie in den Datensätzen enthalten waren, welche als Argumente *d* und *vertices* der Funktion *graph_from_data_frame* übergeben wurden. Es ist jedoch auch möglich, einzelne Attribute erst *nach* der Erstellung des Graphen hinzuzufügen. Dabei wird das neue Attribut so addressiert, als würde es bereits existieren (z.B. *E(graph)$attributneu*), um ihm Werte in Form eines Vektors zuzuweisen. Im folgenden Code-Chunk wird ein einfacher Graph manuell erzeugt, anschließend werden seinen Kanten Gewichte zugeordnet und der Graph wird - beschriftet mit den Kantengewichten - geplottet. Das Argument *edge.label* gibt die Beschriftung der Kanten an. Vollziehen Sie den Code nach und führen Sie Ihn anschließend aus.
+```{r "3__7",fig.height=8}
+#Erzeuge einen ungerichteten Graphen
+graph_weighted <- make_graph(edges = c(1,2,1,3,4,5,4,6,5,6), n = 8, 
+                             directed = FALSE)
+#Füge den Kanten das Attribut weight hinzu
+E(graph = graph_weighted)$weight <- c(3,6,8,2,7)
+#Plotte den Graphen mit Kantengewichten
+plot(x = graph_weighted, edge.label = E(graph = graph_weighted)$weight)
+```
+- - -
+*Aufgabe:* Nun ist es Ihre Aufgabe, ein weiteres Attribut hinzuzufügen. Diesmal bezieht sich das Attribut auf die *Knoten* des Graphen *graph_weighted*. Es soll den Knoten **Namen** zuweisen. Ähnlich wie bei den Gewichten ist auch hier auf die genaue Bezeichnung zu achten - *name* - damit diverse Funktionen von *'igraph'* das Attribut als Knotennamen automatisch erkennen. Die Knoten sollen die folgenden Namen erhalten (in dieser Reihenfolge): "Anna", "Sofie", "Peter", "Franzi", "Manuela", "Ben", "Kai", "Sandra".
+- - -
+*Anmerkung: Bitte beachten Sie, dass Attribute abgesehen von den Attributen Gewicht und Name in der Regel beliebige Namen tragen können.*
+```{r "3__8"}
+#Fügen Sie den Knoten des Graphen graph_weighted das Attribut name hinzu,
+#indem Sie die oben angegebenen Namen in einem Character-Vektor übergeben
+#Vorsicht: Behalten Sie die Reihenfolge der Namen bitte genau so bei!
+
+```
+- - -
+*Aufgabe:* Plotten Sie nun den Graphen erneut beschriftet mit den *Kantengewichten*, ohne jedoch anzugeben, dass die Namen der Knoten angegeben werden sollen.
+- - -
+```{r "3__9",fig.height=10}
+#Plotten Sie den Graph graph_weighted mit Kantengewichten
+
+```
+Wie Sie sehen, hat der *plot*-Befehl von *'igraph'* automatisch die Benennung der Knoten als solche erkannt und die Nummerierung bei der Visualisierung durch die Namen ersetzt.
+
+
+### b) Zusammenhängende und nicht zusammenhängende Netzwerke
+Der Graph *graph_weighted* unterscheidet sich vom Graphen *graph_data1* unter anderem darin, dass nicht alle Knoten (zumindest indirekt) miteinander verbunden sind. Konkret besteht er aus vier Subgraphen - es handelt sich um einen **nicht zusammenhängenden** Graphen.
+
+Im Skript haben Sie eine Methode kennengelernt, mit der die **Subgraphen (Komponenten)** eines Graphen bestimmt werden können: den BFS-Algorithmus. In R erhält man die Information, ob ein ungerichteter Graph zusammenhängend bzw. ein gerichteter Graph (schwach/stark) zusammenhängend ist, über den Befehl *is_connected(graph, mode)*. Die Komponenten selbst erhält man über den Befehl *components(graph, mode)*. Beide Funktionen verwenden zur Betrachtung des Zusammenhängens eines ungerichteten Graphen und zur Betrachtung des schwachen Zusammenhängens eines gerichteten Graphen den BFS-Algorithmus. Bei der Betrachtung des starken Zusammenhängens des gerichteten Graphen wird auf eine andere Methode zurückgegriffen.  
+Im folgenden Code-Chunk werden fünf Graphen erzeugt und geplottet, mit denen wir im Anschluss arbeiten werden. Führen Sie den Code aus.
+```{r "3__10",fig.height=10}
+#Erzeugung und Plotten von fünf Graphen (zwei ungerichtete, drei gerichtete)
+graph_1 <- make_graph(edges = c(1,2, 2,5, 3,4, 3,5, 3,6, 4,6, 5,1), n=5, 
+                      directed=FALSE) 
+plot(x = graph_1)
+graph_2 <- make_graph(edges = c(1,2, 2,5, 3,4, 3,6, 4,6, 5,1), n=5, 
+                      directed=FALSE) 
+plot(x = graph_2)
+graph_3 <- make_graph(edges = c(1,2,2,3,3,1,2,4), n=4) 
+plot(x = graph_3)
+graph_4 <- make_graph(edges = c(3,1,2,4), n=4)
+plot(x = graph_4)
+graph_5 <- make_graph(edges = c(1,2,2,3,3,1,2,4,4,2), n=4)
+plot(x = graph_5)
+```
+
+Bevor Sie mit Hilfe der R-Funktion *is_connected* überprüfen, welche Graphen (stark/schwach) zusammenhängend sind, versuchen Sie zunächst selbst, die folgenden Fragen zu beantworten:
+- - -
+#! addon__quiz__Zusammenh�ngende Graphen
+- - -
+*Aufgabe:* Überprüfen Sie nun im folgenden Code-Chunk mit Hilfe der Funktion *is_connected(graph, mode)* stichprobenartig die angegebenen Graphen. Das Argument *mode* wird lediglich bei *gerichteten Graphen* verwendet. Dort kann es entweder mit *"strong"* (für starken Zusammenhang) oder mit *"weak"* (für schwachen Zusammenhang) übergeben werden.
+- - -
+```{r "3__11"}
+#Prüfen Sie, ob graph_1 tatsächlich ein zusammenhängender Graph ist
+
+#Prüfen Sie, ob graph_3 tatsächlich schwach zusammenhängend ist
+
+#Prüfen Sie, ob graph_3 tatsächlich nicht stark zusammenhängend ist
+
+```
+- - -
+*Aufgabe:* Lassen Sie sich nun mit dem Befehl *components(graph)* Informationen zu den **Komponenten** von *graph_2* ausgeben.
+- - -
+```{r "3__12"}
+#Lassen Sie sich die Komponenten von graph_2 ausgeben
+
+```
+Wie Sie sehen, wird zu jedem Knoten angegeben, welcher Komponente er angehört (*membership*). Außerdem erhält man Informationen zur Größe der Komponenten (*csize*) und zur Anzahl der Komponenten (*no*).
+
+
+## Exercise 4 -- Pfade und Entfernungen in Netzwerken
+### a) Entfernungen in Netzwerken
+Oftmals ist man daran interessiert, die **Entfernung** zwischen bestimmten Knoten in einem Netzwerk zu bestimmen. Die Entfernung 
+$$d(n_i, n_j)$$
+ist dabei definiert als die Länge (in Bezug auf die Anzahl Kanten) des kürzesten Pfades vom Knoten $n_i$ zum Knoten $n_j$. Der Befehl *distances(graph, mode, weights)* im Package *'igraph'* berechnet eben diese Entfernung per default für alle Knoten des Netzwerks und gibt die Werte in einer Matrix zurück. Dabei können bei gerichteten Graphen entweder die Entfernungen vom Knoten in der Zeile zum Knoten in der Spalte angezeigt werden (Argument *mode="out"*) oder umgekehrt (Argument *mode="in"*). Für das Argument *mode="all"* wird der Graph so behandelt, als seien die Kanten ungerichtet. Beim ungerichteten Graphen macht der Modus keinen Unterschied, sodass dieses Argument in dem Fall nicht benötigt wird.  
+Im folgenden Code-Chunk werden zwei Graphen erzeugt - ein ungerichteter und ein gerichteter Graph. Führen Sie den Code aus.
+```{r "4"}
+#Erzeuge zwei Graphen
+#ungerichteter Graph
+graph_1 <- make_graph(edges = c(1,2, 2,5, 3,4, 3,5, 3,6, 4,6, 5,1), n=5,
+                      directed=FALSE)
+#gerichteter Graph
+graph_3 <- make_graph(edges = c(1,2,2,3,3,1,2,4), n=4)
+```
+Betrachten wir zunächst einmal den **ungerichteten Graphen** *graph_1*. Der folgende Code-Chunk plottet den Graphen zunächst. 
+- - -
+*Aufgabe:* Ihre Aufgabe ist es dann, in einem zweiten Schritt für diesen Graphen die Matrix der Entfernungen gemäß der obigen Erläuterung zu berechnen und anschließend anzeigen zu lassen.
+- - -
+```{r "4__2",fig.height=8}
+#Plotten des Graphen graph_1
+plot(x = graph_1)
+#Berechnen Sie die Matrix der Entfernungen in graph_1 und 
+#speichern Sie diese in der Variable d_1
+
+#Lassen Sie sich die Variable d_1 anzeigen
+
+```
+- - -
+*Aufgabe:* Lassen Sie sich nun konkret die Entfernung zwischen den Knoten 1 und 6 ausgeben.
+- - -
+*Anmerkung: Ein Element in Zeile $i$ und Spalte $j$ einer Matrix x wird in R mit dem Befehl x[i,j] addressiert.*
+```{r "4__3"}
+#Wie groß ist die Entfernung d(1,6)?
+
+```
+
+Als Nächstes betrachten wir nun den **gerichteten Graphen** *graph_3*. Um das Element der Entfernungsmatrix mit einem analogen Befehl zu unserer Definition aufrufen zu können (vgl. *distances(...)[i,j]* und $d(n_i, n_j)$), werden wir dazu zunächst den Modus *mode="out"* verwenden. Der folgende Code-Chunk plottet zunächst den (gerichteten) Graphen *graph_3*. 
+- - -
+*Aufgabe:* Es ist Ihre Aufgabe, anschließend die Entfernungen *d(1,4)* sowie *d(4,1)* zu bestimmen. Folgen Sie dazu den Anweisungen in den Kommentaren.
+- - -
+```{r "4__4",fig.height=8}
+#Plotten von graph_3
+plot(x = graph_3)
+#Bestimmen Sie die Matrix der Entfernungen, Modus "out" von graph_3 und
+#speichern Sie diese in der Variable d_3
+
+#Wie groß ist die Entfernung von Knoten 1 zu Knoten 4?
+
+#Wie groß ist die Entfernung von Knoten 4 zu Knoten 1?
+
+```
+Sie sehen, dass auch in R (wie in der Theorie) die Entfernung $d(n_i, n_j)$ als unendlich groß (*Inf*) angegeben wird, wenn es keinen Pfad gibt, der von Knoten $n_i$ zu Knoten $n_j$ verläuft.
+
+Wie Sie vielleicht zu Beginn dieser Aufgabe bemerkt haben, kann die Funktion *distances* auch **Gewichte** (*weights*) **berücksichtigen**. Falls der betrachtete Graph ein Kantenattribut namens *weight* besitzt, verwendet die Funktion diese Werte automatisch als Gewichte. Ist dies nicht gewünscht, muss explizit das Argument *weights=NA* gesetzt werden.
+
+Stellen Sie sich vor, beim folgenden Graph handele es sich um ein Straßennetz. Die einzelnen Knoten stellen kleine Städte dar, die Kanten sind Schnellstraßen. Die Gewichte geben nun wieder, wie dicht der Verkehr auf einer Straße ist: Je größer die Gefahr eines Staus ist, desto höher ist das Gewicht. Der folgende Code-Chunk erstellt das Straßennetz, ordnet den Kanten das Attribut *weight* zu und plottet den Graphen. Im Plot sind die Kanten mit ihren Gewichten beschriftet. Betrachten Sie den Code und führen Sie ihn aus.
+```{r "4__5",fig.height=10}
+#Straßennetz als Graph definieren
+graph_roadnet<-make_graph(edges=c("A","B", "C","B", "B","D", 
+                                 "B","F", "D","E", "D","H",
+                                 "E","F", "F","G"), 
+                          directed = FALSE)
+#Gewichtattribut hinzufügen
+E(graph = graph_roadnet)$weight <- c(1,1,4,10,3,9,2,3)
+#Graph mit Gewichten plotten
+plot(x = graph_roadnet, edge.label = E(graph_roadnet)$weight)
+```
+- - -
+*Aufgabe:* Stellen Sie sich vor, Sie wollen von Stadt *A* zu Stadt *F*. Ermitteln Sie mit Hilfe der Funktion *distances* die Entfernung zwischen den beiden Städten, wenn Sie keinen Verkehrsfunk berücksichtigen und die kürzestmögliche Distanz zurücklegen möchten; ermitteln Sie im Vergleich dazu, was die kürzeste Distanz unter Berücksichtigung der Verkehrssituation wäre.
+- - -
+```{r "4__6"}
+#Wie groß ist die Entfernung zwischen A und F 
+#ohne Berücksichtigung des Verkehrs?
+
+#Wie groß ist die Entfernung mit Berücksichtigung des Verkehrs?
+
+```
+Beachten Sie, dass die Ergebnisse hier unterschiedlich zu interpretieren sind. Ohne Berücksichtigung der Gewichte wird die Anzahl der zu passierenden Straßen angegeben, mit Berücksichtigung der Gewichte die Anzahl der Staugefahreinheiten.
+
+### b) Kürzester Pfad zwischen Knoten
+Während manchmal lediglich die Anzahl der Kanten zwischen zwei Knoten - die Entfernung - eine Rolle spielt, ist es in anderen Kontexten interessant zu wissen, wie genau der **kürzeste Pfad** zwischen zwei Knoten verläuft - beispielsweise in obigem Straßennetz.
+
+Der folgende Code-Chunk betrachtet erneut das Straßennetz *graph_roadnet*. Er zeigt zunächst, wie der kürzeste Pfad von *A* nach *F* verläuft, falls die Verkehrssituation nicht berücksichtigt wird. Der Code hierfür ist bereits gegeben. Betrachten Sie den hierzu verwendeten Befehl *shortest_paths(graph, from, to, weights, output="both")*.
+- - -
+*Aufgabe:* Nutzen Sie denselben Befehl anschließend selbst, um den kürzesten Pfad von *A* nach *F* - diesmal jedoch unter Berücksichtigung der Verkehrssituation - auszugeben. Beachten Sie, dass der Umgang mit Gewichten hier genau analog funktioniert wie bei der Funktion *distances*.  
+- - -
+*Anmerkung: Nähere Informationen zum Output finden Sie unterhalb des Code-Chunks.*
+```{r "4__7"}
+#Ausgabe des kürzesten Pfades von A nach F ohne Berücksichtigung
+#des Verkehrs
+shortest_paths(graph = graph_roadnet, from = "A", to = "F", 
+               weights = NA, output = "both")
+#Ausgabe des kürzesten Pfades von A nach F mit Berücksichtigung
+#des Verkehrs
+
+```
+Wie Sie dem Output entnehmen können, gibt die Funktion *shortest_paths* eine Liste zurück. Das erste Element der Liste (*vpath*) gibt für jeden Zielknoten (*to*) den Pfad als Vektor der Knoten (inklusive Anfangs- und Endknoten) an. Das zweite Element der Liste (*epath*) gibt für jeden Zielknoten die Kanten an, die auf dem Pfad passiert werden. Die beiden weiteren Elemente der Liste sollen für uns keine Rolle spielen.
+
+- - -
+*Aufgabe:* Zum Abschluss ist es nun Ihre Aufgabe, die Funktion auf einen **gerichteten Graphen** anzuwenden. Hier ist zu beachten, dass erneut wie bei der Funktion *distances* der Modus angegeben werden kann. Wir verwenden auch hier das Argument *mode="out"*. Lassen Sie sich für den gerichteten Graphen *graph_3*, der keine Gewichte besitzt, den kürzesten Pfad von Knoten 3 zu Knoten 4 ausgeben. Wählen Sie auch hier das Argument *output="both"*.
+- - -
+Zur besseren Vorstellung wird der Graph anschließend erneut geplottet.
+```{r "4__8",fig.height=10}
+#Ausgabe des kürzesten Pfades von Knoten 3 zu Knoten 4 in graph_3
+#Wählen Sie die Reihenfolge der Argumente bitte wie folgt:
+#graph, from, to, mode, output
+
+#Plotten von graph_3
+plot(x = graph_3)
+```
+
+### c) Anzahl der Pfade der Länge n
+Um die Anzahl der Pfade mit einer bestimmten Länge *n* zwischen zwei Knoten $n_i$ und $n_j$ in einem Netzwerk zu ermitteln, haben Sie im Skript eine allgemeine Formel kennengelernt. Daraus ergibt sich die **Gesamtanzahl der Pfade mit Länge** ***n*** **im Netzwerk**:
+$$\sum_{i=1}^{|N|}{\sum_{j=1}^{|N|}[A^n]_{ij}}$$
+Für Pfade der Länge *n* wird also die Adjazenzmatrix *A* *n*-Mal mit sich selbst multipliziert und anschließend werden die Elemente der resultierenden Matrix aufsummiert.  
+- - -
+*Aufgabe:* Im folgenden Code-Chunk ist es Ihre Aufgabe, eine Funktion zu schreiben, die für eine gegebene Pfadlänge *n* und einen gegebenen Graphen *graph*, welche der Funktion als Argumente übergeben werden, die Anzahl der Pfade mit dieser Länge zurückgibt. Eine Vorlage für den Rahmen der Funktion ist bereits gegeben. Verwenden Sie diese Vorlage, indem Sie die Kommentarzeichen (*#*) entfernen und an den entsprechenden Stellen mit Fragezeichen den fehlenden Code hinzufügen.
+- - -
+*Anmerkung: Falls Sie mit Matrizenrechnung in R nicht vertraut sind, finden Sie in der untenstehenden Infobox eine Hilfestellung.*
+info("Rechnen mit Matrizen und Vektoren in R") # Run this line (Strg-Enter) to show info
+
+```{r "4__9"}
+#Ergänzen Sie die folgende Funktion und entfernen Sie die Kommentarzeichen
+# path_counter <- function(graph, n){
+#   matrix_result <- graph[]
+#   if(n>1){
+#     for(count in 1:??){
+#     matrix_result <- ??
+#     }
+#   }
+#   number_paths <- ??
+#   return(number_paths)
+# }
+
+```
+- - -
+*Aufgabe:* Testen Sie nun Ihre Funktion, indem Sie die Anzahl der Pfade mit Länge 1 und die Anzahl der Pfade mit Länge 3 im ungerichteten Graphen *graph_1* ermitteln.
+- - -
+```{r "4__10"}
+#Ermitteln Sie die Anzahl der Pfade mit Länge 1 in graph_1
+
+#Ermitteln Sie die Anzahl der Pfade mit Länge 3 in graph_1
+
+```
+
+
+## Exercise LV -- Literaturverzeichnis
+### Packages:
+* Csardi G., Nepusz T. (2006): The igraph software package for complex network research. InterJournal, Complex Systems, S. 1695, URL: http://igraph.org. 
+* Kranz, Sebastian (2015): RTutor: R problem sets with automatic test of solution and hints. R package version 2015.12.16. 
+* Kross, Sean; Carchedi, Nick; Bauer, Bill; Grdina, Gina (2016): swirl: Learn R, in R. R package version 2.4.2, URL: https://CRAN.R-project.org/package=swirl. 
+* R Core Team (2016): R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria, URL: https://www.R-project.org/. 
+* Stephens, Jeremy (2016): yaml: Methods to Convert R Data to YAML and Back. R package version 2.1.14, URL: https://CRAN.R-project.org/package=yaml. 
+
+### Packagebeschreibungen/Hilfeseiten:
+* igraph (2015): Package 'igraph', URL: https://cran.r-project.org/web/packages/igraph/igraph.pdf. 
+
+### Buch-, Paper- und Onlinequellen:
+* Kolaczyk, Eric; Csárdi, Gábor (2014): Statistical Analysis of Network Data with R. New York: Springer Science+Business Media. 
+* Luke, Douglas A. (2015): A User's Guide to Network Analysis in R. Springer International Publishing Switzerland.
+* Ognyanova, Katya (2016a):, NetSciX School of Code Workshop: Network analysis (and visualization) with R and igraph. NetSciX 2016 School of Code Workshop, Wroclaw, URL: www.kateto.net/netscix2016. (inklusive dort bereitgestelltes Code-Material)  
+* Ognyanova, Katya (2016b): Network visualization with R. POLNET 2016 Workshop, St. Louis, MO, URL: http://kateto.net/network-visualization.  
+
